@@ -9,8 +9,8 @@ pkgs.writeHaskellPackage "xmonad-ilmu" {
       "xmonad"
       "xmonad-contrib"
       "xmonad-extra"
-      "xmonad-zone"
+      # "xmonad-zone"
     ];
-    text = builtins.readFile ./xmonad.hs;
+    text = builtins.readFile ../Dot/Xmonad/xmonad.hs;
   };
 }

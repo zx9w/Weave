@@ -1,5 +1,7 @@
 { pkgs, ... }:
 {
+  # let xmonad-ilmu = import...
+#in
   # Enable the X11 windowing system.
   services.xserver = {
     enable = true;
@@ -10,7 +12,7 @@
       enable = true;
       enableContribAndExtras = true;
       extraPackages = haskellPackages: [
-        haskellPackages.xmonad
+        haskellPackages.xmonad-ilmu
         haskellPackages.xmonad-extras
         haskellPackages.xmonad-contrib
       ];
