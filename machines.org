@@ -1,0 +1,24 @@
+* Plan
+** Xmonad state machine
+   I will attempt to put xmonad keybindings in the best namespace without it overlapping with the namespace of the windows. This will require some heavy modifications.
+*** Rearrange mode
+    Used to build a layouts that will then be "entered" to get to work. The layout can mutate in ways set during rearrange mode.
+*** Consume mode
+    Mostly for browsing but also for reading documentation or books or whatever. Should be fairly self explanatory.
+*** Produce mode
+    Easy swapping with multiple windows going back and forth so that it is easy to write code or jump around the filesystem.
+*** Insert mode
+    A submode of Consume and Produce that allows you to send commands to the window you entered.
+
+
+** Emacs state machine
+   Has a similar hierarchy as above, mostly I want a mode to jump between buffers.
+*** 
+
+* Xmonad
+** Layouts
+   Be able to hide browser
+   
+* Nixos
+** Init
+   TODO : initialHashPassword setting for user ilmu would make it easier to bootstrap.
