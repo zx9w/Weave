@@ -1,0 +1,249 @@
+# Edit this configuration file to define what should be installed on
+# your system.  Help is available in the configuration.nix(5) man page
+# and in the NixOS manual (accessible by running ‘nixos-help’).
+
+{ config, pkgs, ... }:
+
+{
+  imports =
+    [ # Include the results of the hardware scan.
+      ./hardware-configuration.nix
+      ./Modules/retiolum.nix
+      ./Modules/neovim.nix
+    ];
+
+  boot.initrd.luks.devices = [
+    {
+      name = "root";
+      device = "/dev/nvme0n1p2";
+      preLVM = true;
+    }
+  ];
+
+  # Bla
+  environment.shellAliases.nixi = "nix repl '<nixpkgs>'";
+
+  # Use the systemd-boot EFI boot loader.
+  boot.loader.systemd-boot.enable = true;
+  boot.loader.efi.canTouchEfiVariables = true;
+
+  networking.hostName = "uppreisn"; # Define your hostname.
+
+  networking.networkmanager = {
+    enable = true;
+    # wifi.powersave = true; # when active suspends wifi if unused for timeperiod
+  };
+
+
+  # Retiolum Krebs VPN
+  networking.retiolum = {
+    ipv4 = "10.243.42.13";
+    ipv6 = "42:0:3c46:bc8c:78fb:66b5:512c:7fbe";
+    nodename = "uppreisn";
+  };
+
+  # Configure network proxy if necessary
+  # networking.proxy.default = "http://user:password@proxy:port/";
+  # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
+
+  # Select internationalisation properties.
+  i18n = {
+    consoleFont = "Lat2-Terminus16";
+    consoleKeyMap = "us";
+    defaultLocale = "en_US.UTF-8";
+  };
+
+  # Set your time zone. NOTE: Maybe redundant now with localtime.
+  time.timeZone = "Europe/Berlin";
+
+  # Allow unfree packages
+  # nixpkgs.config = {
+  #   allowunfree = true;
+  # };
+
+  # List packages installed in system profile. To search, run:
+  # $ nix search wget
+  environment.systemPackages = with pkgs; [
+    wget curl vim emacs git dmenu zlib tmux
+    xfontsel xlsfonts xscreensaver xclip feh
+    haskellPackages.ghc
+    haskellPackages.cabal-install
+    haskellPackages.stack
+    imagemagick stalonetray kitty tree vlc
+    firefox which ripgrep alacritty fzf
+    networkmanagerapplet htop zathura jq
+    file scrot gnupg gimp-with-plugins
+    inkscape which xorg.xev acpi arandr
+    pavucontrol font-awesome_5 pass
+    binutils gcc gnumake openssl pkgconfig
+  ];
+
+  # Some programs need SUID wrappers, can be configured further or are
+  # started in user sessions.
+  # programs.mtr.enable = true;
+
+  documentation.man.enable = true;
+
+  # for redshift, cause I'm lazy, TODO switch to lat/lon
+  # services.geoclue2.enable = true;
+  # services.localtime.enable = true;
+
+  services.redshift = {
+    enable = true;
+    # brightness.day   = "1.0"; # min 0.1
+    # brightness.night = "0.4"; # min 0.1
+    temperature.day   = 5500; # default d: 5500, n: 3700
+    temperature.night = 2700; # possible: 1000-25000
+    latitude = "52.3";
+    longitude = "13.2";
+    # provider = "geoclue2"; # must specify lat/lon if "manual"
+  };
+
+  services.logind = {
+    lidSwitch = "hybrid-sleep";
+    lidSwitchDocked = "ignore";
+    lidSwitchExternalPower = "suspend";
+    extraConfig = "HandlePowerKey=ignore";
+  };
+
+  # This should allow logind to hibernate the computer when I close it
+  security.sudo.extraConfig = "ilmu ALL=NOPASSWD: /run/current-system/sw/bin/systemctl suspend,/run/current-system/sw/bin/systemctl hibernate,/run/current-system/sw/bin/systemctl hybrid-sleep,/run/current-system/sw/bin/systemctl suspend-then-hibernate";
+
+  # I was having problems with DNSSEC questions to bitwala blocking protonmail
+  # TODO Actually use this! It doesn't work right now but I'm lazy.
+  # services.dnscrypt-proxy = {
+  #   enable = true;
+  #   resolverName = "ns0.dnscrypt.is";
+  # };
+  # networking.nameservers = ["127.0.0.1"];
+
+  powerManagement = {
+    enable = true;
+    powertop.enable = true;
+  };
+
+  services.acpid = {
+    enable = true;
+    # need to learn how to handlers
+  };
+
+  programs = {
+    slock.enable = true;
+    command-not-found.enable = true;
+    bash.enableCompletion = true;
+    gnupg.agent = {
+      enable = true;
+      enableSSHSupport = true;
+    };
+  };
+
+  # Enable Virtualisation
+  virtualisation = {
+    virtualbox.host.enable = true;
+    docker.enable = true;
+  };
+
+  # Containers for programming environments
+  # This is an experiment!
+  containers.rust = {
+    config =
+      { config, pkgs, ... }:
+      { 
+        services.postgresql = {
+          enable = true;
+          package = pkgs.postgresql96;
+        };
+        nixpkgs.config = {
+          allowunfree = true;
+        };
+        environment.systemPackages = with pkgs; [
+          wget curl vim emacs git zlib tmux
+          xfontsel xlsfonts xclip
+          ripgrep which binutils gcc gnumake
+	  openssl pkgconfig
+        ];
+      };
+   };
+
+  # List services that you want to enable:
+
+  # Enable the OpenSSH daemon.
+  # services.openssh.enable = true;
+
+  # Enable postgres
+  services.postgresql = {
+    enable = true;
+    package = pkgs.postgresql96;
+    authentication = pkgs.lib.mkOverride 10 ''
+      local all all trust
+      host all all ::1/128 trust
+    '';
+    initialScript = pkgs.writeText "backend-initScript" ''
+      CREATE ROLE ilmu CREATEDB;
+      CREATE DATABASE jafnabackdb;
+      GRANT ALL PRIVILEGES ON DATABASE jafnabackdb TO ilmu;
+    '';
+  };
+
+  # Open ports in the firewall.
+  # networking.firewall.allowedTCPPorts = [ ... ];
+  # networking.firewall.allowedUDPPorts = [ ... ];
+  # Or disable the firewall altogether.
+  # networking.firewall.enable = false;
+
+  # Enable CUPS to print documents.
+  services.printing.enable = true;
+
+  # Battery Management - From online
+  services.tlp.enable = true;
+
+  # Enable sound.
+  sound.enable = true;
+  hardware.pulseaudio.enable = true;
+
+  # Enable the X11 windowing system.
+  services.xserver = {
+    enable = true;
+    layout = "us,is";
+    xkbOptions = "eurosign:e";
+    libinput.enable = true; # Enable touchpad support.
+    windowManager.xmonad = {
+      enable = true;
+      enableContribAndExtras = true;
+      extraPackages = haskellPackages: [
+        haskellPackages.xmonad
+        haskellPackages.xmonad-extras
+        haskellPackages.xmonad-contrib
+      ];
+    };
+    windowManager.default = "xmonad";
+  };
+
+
+  services.xserver.displayManager.sddm.enable = true;
+
+  # Enable the KDE Desktop Environment - Disable ASAP
+  services.xserver.desktopManager.plasma5.enable = true;
+
+  # Define a user account. Don't forget to set a password with ‘passwd’.
+  users.extraUsers.ilmu = {
+    isNormalUser = true;
+    uid = 1000;
+    extraGroups = ["wheel" "networkmanager" "docker" "vboxusers"];
+  };
+
+  # Define Environment Variables, like $EDITOR
+  environment.variables = {
+    EDITOR = "vim";
+    VISUAL = "vim";
+    XDG_CONFIG_HOME = "/home/ilmu/.config/";
+    GOPATH = "/home/ilmu/Projects/Go/";
+  };
+
+  # This value determines the NixOS release with which your system is to be
+  # compatible, in order to avoid breaking some software such as database
+  # servers. You should change this only after NixOS release notes say you
+  # should.
+  system.stateVersion = "18.09"; # Did you read the comment?
+
+}
