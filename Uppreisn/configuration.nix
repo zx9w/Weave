@@ -6,10 +6,13 @@
 
 {
   imports =
-    [ # Include the results of the hardware scan.
+    [
       ./hardware-configuration.nix
-      ./Modules/retiolum.nix
-      ./Modules/neovim.nix
+      ../Modules/retiolum.nix
+      ../Modules/neovim.nix
+      ../Modules/laptop.nix
+      ../Modules/x.nix
+      ../Modules/virtualisation.nix
     ];
 
   boot.initrd.luks.devices = [
@@ -84,31 +87,6 @@
 
   documentation.man.enable = true;
 
-  # for redshift, cause I'm lazy, TODO switch to lat/lon
-  # services.geoclue2.enable = true;
-  # services.localtime.enable = true;
-
-  services.redshift = {
-    enable = true;
-    # brightness.day   = "1.0"; # min 0.1
-    # brightness.night = "0.4"; # min 0.1
-    temperature.day   = 5500; # default d: 5500, n: 3700
-    temperature.night = 2700; # possible: 1000-25000
-    latitude = "52.3";
-    longitude = "13.2";
-    # provider = "geoclue2"; # must specify lat/lon if "manual"
-  };
-
-  services.logind = {
-    lidSwitch = "hybrid-sleep";
-    lidSwitchDocked = "ignore";
-    lidSwitchExternalPower = "suspend";
-    extraConfig = "HandlePowerKey=ignore";
-  };
-
-  # This should allow logind to hibernate the computer when I close it
-  security.sudo.extraConfig = "ilmu ALL=NOPASSWD: /run/current-system/sw/bin/systemctl suspend,/run/current-system/sw/bin/systemctl hibernate,/run/current-system/sw/bin/systemctl hybrid-sleep,/run/current-system/sw/bin/systemctl suspend-then-hibernate";
-
   # I was having problems with DNSSEC questions to bitwala blocking protonmail
   # TODO Actually use this! It doesn't work right now but I'm lazy.
   # services.dnscrypt-proxy = {
@@ -117,18 +95,9 @@
   # };
   # networking.nameservers = ["127.0.0.1"];
 
-  powerManagement = {
-    enable = true;
-    powertop.enable = true;
-  };
-
-  services.acpid = {
-    enable = true;
-    # need to learn how to handlers
-  };
 
   programs = {
-    slock.enable = true;
+    slock.enable = true; # TODO Switch to physlock
     command-not-found.enable = true;
     bash.enableCompletion = true;
     gnupg.agent = {
@@ -136,34 +105,6 @@
       enableSSHSupport = true;
     };
   };
-
-  # Enable Virtualisation
-  virtualisation = {
-    virtualbox.host.enable = true;
-    docker.enable = true;
-  };
-
-  # Containers for programming environments
-  # This is an experiment!
-  containers.rust = {
-    config =
-      { config, pkgs, ... }:
-      { 
-        services.postgresql = {
-          enable = true;
-          package = pkgs.postgresql96;
-        };
-        nixpkgs.config = {
-          allowunfree = true;
-        };
-        environment.systemPackages = with pkgs; [
-          wget curl vim emacs git zlib tmux
-          xfontsel xlsfonts xclip
-          ripgrep which binutils gcc gnumake
-	  openssl pkgconfig
-        ];
-      };
-   };
 
   # List services that you want to enable:
 
@@ -194,36 +135,9 @@
   # Enable CUPS to print documents.
   services.printing.enable = true;
 
-  # Battery Management - From online
-  services.tlp.enable = true;
-
   # Enable sound.
   sound.enable = true;
   hardware.pulseaudio.enable = true;
-
-  # Enable the X11 windowing system.
-  services.xserver = {
-    enable = true;
-    layout = "us,is";
-    xkbOptions = "eurosign:e";
-    libinput.enable = true; # Enable touchpad support.
-    windowManager.xmonad = {
-      enable = true;
-      enableContribAndExtras = true;
-      extraPackages = haskellPackages: [
-        haskellPackages.xmonad
-        haskellPackages.xmonad-extras
-        haskellPackages.xmonad-contrib
-      ];
-    };
-    windowManager.default = "xmonad";
-  };
-
-
-  services.xserver.displayManager.sddm.enable = true;
-
-  # Enable the KDE Desktop Environment - Disable ASAP
-  services.xserver.desktopManager.plasma5.enable = true;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.extraUsers.ilmu = {

@@ -8,6 +8,10 @@
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
+      ../Modules/neovim.nix
+      ../Modules/laptop.nix
+      ../Modules/x.nix
+      ../Modules/virtualisation.nix
     ];
 
   boot.initrd.luks.devices = [
@@ -88,36 +92,11 @@
   #   enable = true;
   #   handlers 
 
-  services.logind = {
-    lidSwitch = "suspend-then-hibernate";
-    lidSwitchExternalPower = "ignore";
-    lidSwitchDocked = "ignore";
+  environment.variables = {
+    GOPATH = "/home/ilmu/Work/Go";
+    SISU = "/home/ilmu/Work/Go/src/sisu.sh";
   };
 
-  services.tlp.enable = true;
-
-  virtualisation = {
-    virtualbox.host.enable = true;
-    docker.enable = true;
-  };
-
-  services.xserver = {
-    enable = true;
-    layout = "us";
-    windowManager.xmonad = {
-      enable = true;
-      enableContribAndExtras = true;
-      extraPackages = haskellPackages: [
-        haskellPackages.xmonad
-        haskellPackages.xmonad-extras
-        haskellPackages.xmonad-contrib
-      ];
-    };
-    windowManager.default = "xmonad";
-  };
-
-  environment.sessionVariables.GOPATH = [ "/home/ilmu/Work/Go" ];
-  environment.sessionVariables.SISU   = [ "/home/ilmu/Work/Go/src/sisu.sh" ];
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -170,12 +149,6 @@
   # Enable sound.
   sound.enable = true;
   hardware.pulseaudio.enable = true;
-
-  # Enable touchpad support.
-  services.xserver.libinput.enable = true;
-
-  # Enable the KDE Desktop Environment.
-  services.xserver.displayManager.sddm.enable = true;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.groups.rishi = {
