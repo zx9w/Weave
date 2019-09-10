@@ -13,7 +13,7 @@
 
 ** Emacs state machine
    Has a similar hierarchy as above, mostly I want a mode to jump between buffers.
-*** 
+*** evil + Jump mode
 
 * Xmonad
 ** Layouts
@@ -22,3 +22,8 @@
 * Nixos
 ** Init
    TODO : initialHashPassword setting for user ilmu would make it easier to bootstrap.
+
+* Actionable
+** xmonad
+*** state machine
+**** make something like xmonad-stockholm
