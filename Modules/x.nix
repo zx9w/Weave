@@ -12,7 +12,7 @@
       enable = true;
       enableContribAndExtras = true;
       extraPackages = haskellPackages: [
-        haskellPackages.xmonad-ilmu
+        haskellPackages.xmonad
         haskellPackages.xmonad-extras
         haskellPackages.xmonad-contrib
       ];

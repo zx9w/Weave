@@ -34,4 +34,13 @@
 (use-package evil
   :ensure t)
 
-(evil-normal-state)
+(evil-normal-state 1)
+
+					; (setq custom-file "/path/to/file")
+					; (load custom-file)
+
+					; blocks to use this at work:
+					; xmonad layout
+					; xmonad navigation
+					; keybinds in emacs
+					; go integration
