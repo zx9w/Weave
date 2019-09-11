@@ -32,3 +32,9 @@
 ** xmonad
 *** state machine
 **** make something like xmonad-stockholm
+
+
+* Design
+** Xmonad
+*** Rearrange windows is safe, press whatever you like.
+*** To do that, deleted windows should be sent to a temporary workspace
