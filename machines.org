@@ -1,4 +1,9 @@
 * Plan
+** Actionable
+*** gomacs
+**** get it to a state that it is useful
+*** xmonad
+**** 
 ** Xmonad state machine
    I will attempt to put xmonad keybindings in the best namespace without it overlapping with the namespace of the windows. This will require some heavy modifications.
 *** Rearrange mode
