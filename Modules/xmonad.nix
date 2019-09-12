@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 pkgs.writeHaskellPackage "xmonad-ilmu" {
   executable.xmonad = {
     extra-depends = [
