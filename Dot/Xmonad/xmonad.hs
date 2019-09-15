@@ -5,16 +5,22 @@ import System.Exit
 
 import qualified XMonad.StackSet as W
 import XMonad.Config.Desktop
+
 import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.ManageHelpers
+
 import XMonad.Layout.BinarySpacePartition (emptyBSP)
 import XMonad.Layout.NoBorders (noBorders)
 import XMonad.Layout.ResizableTile (ResizableTall(..))
 import XMonad.Layout.ToggleLayouts (ToggleLayout(..), toggleLayouts)
-import XMonad.Prompt
-import XMonad.Prompt.ConfirmPrompt
+import XMonad.Prompt (autoComplete, font, searchPredicate, XPConfig)
+import XMonad.Prompt.AppLauncher
 import XMonad.Prompt.Shell
+
 import XMonad.Util.EZConfig
+import XMonad.Util.NamedWindows (getName)
+import XMonad.Util.Run (safeSpawn)
+
 
 data LibNotifyUrgencyHook = LibNotifyUrgencyHook deriving (Read, Show)
 

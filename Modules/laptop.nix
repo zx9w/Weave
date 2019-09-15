@@ -16,14 +16,16 @@
   };
 
   services.logind = {
-    lidSwitch = "suspend-then-hibernate";
+    lidSwitch = "hybrid-sleep";
     lidSwitchDocked = "ignore";
-    lidSwitchExternalPower = "suspend";
+    lidSwitchExternalPower = "ignore";
     extraConfig = "HandlePowerKey=ignore";
   };
 
   # This should allow logind to hibernate the computer when I close it
-  security.sudo.extraConfig = "ilmu ALL=NOPASSWD: /run/current-system/sw/bin/systemctl suspend,/run/current-system/sw/bin/systemctl hibernate,/run/current-system/sw/bin/systemctl hybrid-sleep,/run/current-system/sw/bin/systemctl suspend-then-hibernate";
+  security.sudo.extraConfig = ''
+    ilmu ALL=NOPASSWD: /run/current-system/sw/bin/systemctl suspend,/run/current-system/sw/bin/systemctl hibernate,/run/current-system/sw/bin/systemctl hybrid-sleep,/run/current-system/sw/bin/systemctl suspend-then-hibernate
+    '';
 
   powerManagement = {
     enable = true;
@@ -38,4 +40,6 @@
   # Battery Management - From online
   services.tlp.enable = true;
 
+  # powerManagement.powerUpCommands
+  # powerManagement.powerDownCommands
 }
