@@ -1,6 +1,3 @@
-# Edit this configuration file to define what should be installed on
-# your system.  Help is available in the configuration.nix(5) man page
-# and in the NixOS manual (accessible by running ‘nixos-help’).
 
 { config, pkgs, ... }:
 
@@ -8,8 +5,8 @@
   imports =
     [
       ./hardware-configuration.nix
-      ../Modules/retiolum.nix
-      ../Modules/neovim.nix
+      <Weave/Modules/retiolum.nix>
+      <Weave/Modules/neovim.nix>
       ../Modules/laptop.nix
       ../Modules/x.nix
       ../Modules/virtualisation.nix
@@ -153,6 +150,7 @@
     VISUAL = "vim";
     XDG_CONFIG_HOME = "/home/ilmu/.config/";
     GOPATH = "/home/ilmu/Projects/Go/";
+    LEDGER_FILE = "/home/ilmu/Bureaucracy/Money/";
   };
 
   # This value determines the NixOS release with which your system is to be
