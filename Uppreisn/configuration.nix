@@ -5,8 +5,8 @@
   imports =
     [
       ./hardware-configuration.nix
-      <Weave/Modules/retiolum.nix>
-      <Weave/Modules/neovim.nix>
+      ../Modules/retiolum.nix
+      ../Modules/neovim.nix
       ../Modules/laptop.nix
       ../Modules/x.nix
       ../Modules/virtualisation.nix
