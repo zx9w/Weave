@@ -72,6 +72,7 @@
     haskellPackages.ghc
     haskellPackages.cabal-install
     haskellPackages.stack
+    haskellPackages.hledger
     imagemagick stalonetray kitty tree vlc
     firefox which ripgrep alacritty fzf
     networkmanagerapplet htop zathura jq
