@@ -28,8 +28,8 @@
 
   networking.hostName = "simple-nixos"; # Define your hostname.
   # Not compatible with the networkmanager.enable option.
-  networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
-  # networking.networkmanager.enable = true;
+  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
+  networking.networkmanager.enable = true;
 
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
@@ -95,6 +95,11 @@
   environment.variables = {
     GOPATH = "/home/ilmu/Work/Go";
     SISU = "/home/ilmu/Work/Go/src/sisu.sh";
+    SISU_AUTH_SECRET_KEY = "123456";
+    BROKER_CLIENT_ID = "1234";
+    BROKER_CLIENT_SECRET = "1234";
+    DEFAULT_CLIENT_ID = "601673176557782";
+    DEFAULT_CLIENT_SECRET = "g63ocune04hnr6a5136y3vcwpsidijxo";
   };
 
 
