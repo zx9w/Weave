@@ -10,6 +10,7 @@
       ../Modules/laptop.nix
       ../Modules/x.nix
       ../Modules/virtualisation.nix
+      ../Modules/util.nix
     ];
 
   boot.initrd.luks.devices = [
@@ -19,9 +20,6 @@
       preLVM = true;
     }
   ];
-
-  # Bla
-  environment.shellAliases.nixi = "nix repl '<nixpkgs>'";
 
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
@@ -83,7 +81,6 @@
   # started in user sessions.
   # programs.mtr.enable = true;
 
-  documentation.man.enable = true;
 
   # I was having problems with DNSSEC questions to bitwala blocking protonmail
   # TODO Actually use this! It doesn't work right now but I'm lazy.
@@ -129,13 +126,6 @@
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
-
-  # Enable CUPS to print documents.
-  services.printing.enable = true;
-
-  # Enable sound.
-  sound.enable = true;
-  hardware.pulseaudio.enable = true;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.extraUsers.ilmu = {
