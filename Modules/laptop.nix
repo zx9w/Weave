@@ -19,7 +19,7 @@
     lidSwitch = "ignore"; # "hybrid-sleep";
     lidSwitchDocked = "ignore";
     lidSwitchExternalPower = "ignore";
-    extraConfig = "HandlePowerKey=ignore";
+    extraConfig = "HandlePowerKey=hybrid-sleep";
   };
 
   # This should allow logind to hibernate the computer when I close it
