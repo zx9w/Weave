@@ -75,6 +75,11 @@
     inkscape which xorg.xev acpi arandr
     pavucontrol font-awesome_5 pass
     binutils gcc gnumake openssl pkgconfig
+    (callPackage ../Packages/know.nix {todofilepath = "~/Projects/Forever/todo.txt";})
+    (callPackage ../Packages/iskb.nix {})
+    (callPackage ../Packages/uskb.nix {})
+    (callPackage ../Packages/todo.nix {todofilepath = "~/Projects/Forever/todo.txt";})
+    (callPackage ../Packages/toedit.nix {todofilepath = "~/Projects/Forever/todo.txt";})
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
