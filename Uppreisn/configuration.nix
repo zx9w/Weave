@@ -1,7 +1,3 @@
-# Edit this configuration file to define what should be installed on
-# your system.  Help is available in the configuration.nix(5) man page
-# and in the NixOS manual (accessible by running ‘nixos-help’).
-
 { config, pkgs, ... }:
 
 {
@@ -13,7 +9,14 @@
       ../Modules/laptop.nix
       ../Modules/x.nix
       ../Modules/virtualisation.nix
+      ../Modules/util.nix
     ];
+
+  fonts.fontconfig.enable = true;
+
+  services.xserver.displayManager.sessionCommands = ''
+    ${pkgs.feh}/bin/feh  --no-fehbg --bg-scale ~/Images/someima.jpg
+  '';
 
   boot.initrd.luks.devices = [
     {
@@ -22,9 +25,6 @@
       preLVM = true;
     }
   ];
-
-  # Bla
-  environment.shellAliases.nixi = "nix repl '<nixpkgs>'";
 
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
@@ -72,6 +72,7 @@
     haskellPackages.ghc
     haskellPackages.cabal-install
     haskellPackages.stack
+    haskellPackages.hledger
     imagemagick stalonetray kitty tree vlc
     firefox which ripgrep alacritty fzf
     networkmanagerapplet htop zathura jq
@@ -79,13 +80,17 @@
     inkscape which xorg.xev acpi arandr
     pavucontrol font-awesome_5 pass
     binutils gcc gnumake openssl pkgconfig
+    (callPackage ../Packages/know.nix {todofilepath = "~/Projects/Forever/todo.txt";})
+    (callPackage ../Packages/iskb.nix {})
+    (callPackage ../Packages/uskb.nix {})
+    (callPackage ../Packages/todo.nix {todofilepath = "~/Projects/Forever/todo.txt";})
+    (callPackage ../Packages/toedit.nix {todofilepath = "~/Projects/Forever/todo.txt";})
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   # programs.mtr.enable = true;
 
-  documentation.man.enable = true;
 
   # I was having problems with DNSSEC questions to bitwala blocking protonmail
   # TODO Actually use this! It doesn't work right now but I'm lazy.
@@ -132,13 +137,6 @@
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
 
-  # Enable CUPS to print documents.
-  services.printing.enable = true;
-
-  # Enable sound.
-  sound.enable = true;
-  hardware.pulseaudio.enable = true;
-
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.extraUsers.ilmu = {
     isNormalUser = true;
@@ -152,6 +150,7 @@
     VISUAL = "vim";
     XDG_CONFIG_HOME = "/home/ilmu/.config/";
     GOPATH = "/home/ilmu/Projects/Go/";
+    LEDGER_FILE = "/home/ilmu/Bureaucracy/Money/";
   };
 
   # This value determines the NixOS release with which your system is to be

@@ -1,5 +1,5 @@
-{ pkgs, ... }:
-pkgs.writeHaskellPackage "xmonad-ilmu" {
+{ config, pkgs, ... }:
+pkgs.writers.writeHaskellPackage "xmonad-ilmu" {
   executable.xmonad = {
     extra-depends = [
       "containers"
@@ -11,6 +11,6 @@ pkgs.writeHaskellPackage "xmonad-ilmu" {
       "xmonad-extra"
       # "xmonad-zone"
     ];
-    text = builtins.readFile ../Dot/Xmonad/xmonad.hs;
+    text = builtins.readFile ../Dotfiles/Xmonad/xmonad.hs;
   };
 }
