@@ -16,6 +16,7 @@
         haskellPackages.xmonad-extras
         haskellPackages.xmonad-contrib
       ];
+      config = ../Dot/Xmonad/xmonad.hs;
     };
     windowManager.default = "xmonad";
   };

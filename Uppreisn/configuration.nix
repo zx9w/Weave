@@ -1,4 +1,3 @@
-
 { config, pkgs, ... }:
 
 {
@@ -12,6 +11,12 @@
       ../Modules/virtualisation.nix
       ../Modules/util.nix
     ];
+
+  fonts.fontconfig.enable = true;
+
+  services.xserver.displayManager.sessionCommands = ''
+    ${pkgs.feh}/bin/feh  --no-fehbg --bg-scale ~/Images/someima.jpg
+  '';
 
   boot.initrd.luks.devices = [
     {
