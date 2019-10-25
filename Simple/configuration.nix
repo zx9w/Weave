@@ -29,6 +29,13 @@
   networking.hostName = "simple-nixos"; # Define your hostname.
   # Not compatible with the networkmanager.enable option.
   networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
+  networking.supplicant = {
+    "wlp61s0" = {
+      extraConf = ''
+        update_config=1
+      '';
+    };
+  };
   # networking.networkmanager.enable = true;
 
   # Configure network proxy if necessary
@@ -61,7 +68,7 @@
     tmux tree htop imagemagick ripgrep
     fzf firefox which openssl gnupg libreoffice
     gimp-with-plugins zathura file jq scrot vlc
-    tinc acpi unstable.go #   networkmanager
+    tinc acpi unstable.go unstable.openssh
     wpa_supplicant wpa_supplicant_gui
     haskellPackages.ghc
     haskellPackages.stack
