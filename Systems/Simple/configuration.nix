@@ -8,10 +8,11 @@
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
-      ../Modules/neovim.nix
-      ../Modules/laptop.nix
-      ../Modules/x.nix
-      ../Modules/virtualisation.nix
+      ../../Modules/neovim.nix
+      ../../Modules/laptop.nix
+      ../../Modules/x.nix
+      ../../Modules/virtualisation.nix
+      ../../Modules/alias.nix
     ];
 
   boot.initrd.luks.devices = [

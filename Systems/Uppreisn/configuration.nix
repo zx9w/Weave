@@ -4,12 +4,13 @@
   imports =
     [
       ./hardware-configuration.nix
-      ../Modules/retiolum.nix
-      ../Modules/neovim.nix
-      ../Modules/laptop.nix
-      ../Modules/x.nix
-      ../Modules/virtualisation.nix
-      ../Modules/util.nix
+      ../../Modules/retiolum.nix
+      ../../Modules/neovim.nix
+      ../../Modules/laptop.nix
+      ../../Modules/x.nix
+      ../../Modules/virtualisation.nix
+      ../../Modules/util.nix
+      ../../Modules/alias.nix
     ];
 
   fonts.fontconfig.enable = true;
@@ -80,11 +81,11 @@
     inkscape which xorg.xev acpi arandr
     pavucontrol font-awesome_5 pass
     binutils gcc gnumake openssl pkgconfig
-    (callPackage ../Packages/know.nix {todofilepath = "~/Projects/Forever/todo.txt";})
-    (callPackage ../Packages/iskb.nix {})
-    (callPackage ../Packages/uskb.nix {})
-    (callPackage ../Packages/todo.nix {todofilepath = "~/Projects/Forever/todo.txt";})
-    (callPackage ../Packages/toedit.nix {todofilepath = "~/Projects/Forever/todo.txt";})
+    (callPackage ../../Packages/know.nix {todofilepath = "~/Projects/Forever/todo.txt";})
+    (callPackage ../../Packages/iskb.nix {})
+    (callPackage ../../Packages/uskb.nix {})
+    (callPackage ../../Packages/todo.nix {todofilepath = "~/Projects/Forever/todo.txt";})
+    (callPackage ../../Packages/toedit.nix {todofilepath = "~/Projects/Forever/todo.txt";})
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
