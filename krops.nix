@@ -8,7 +8,7 @@ let
   source = lib.evalSource [
     {
       nixpkgs.git = {
-        ref = "nixos-19.03";
+        ref = "nixos-19.09";
         url = https://github.com/NixOS/nixpkgs-channels;
       };
       nixos-config.file = toString ./configuration.nix;
