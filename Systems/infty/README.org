@@ -1,0 +1,58 @@
+Things have to be done manually at the moment:
+* configure pycharm
+** add emacs as external tool
+  follow instructions below, also available at https://www.jetbrains.com/help/pycharm/using-emacs-as-an-external-editor.html
+*** intructions
+    In main window, do "File > Settings" (M-f M-t)
+    In the left-hand menubar, do "Tools > External Tools"
+    In the right-hand-side window, press "+" icon
+    Name: Emacs
+    Group: External Tools
+    Description: Open Emacs
+    Program: ~/home/infty/.nix-profile/bin/emacsclient~
+    Arguments: ~-c $FilePath$~
+    Working directory ~$ProjectFileDir$~
+    
+    Also remember to set a keyboard shortcut. We have used M-Space
+** add vim plugin
+* import ssh config
+  after copying ~.ssh~, might have to change permissions: https://stackoverflow.com/questions/9270734/ssh-permissions-are-too-open-error
+* import password store
+* disable touch pad
+** automatically
+  #+begin_src shell
+    xinput list | \ # list all input devices
+    grep TouchPad | \ # restrict to the touchpad
+    awk '{print$6}' | \ # grab the field specifying the device id for the touchpad
+    grep -o '[0-9]\+' | \ # grab only numbers
+    xargs xinput --disable # feed this number as an argument to `xinput --disable`
+  #+end_src
+** manually
+  see https://askubuntu.com/questions/65951/how-to-disable-the-touchpad
+  run ~xinput list | grep TouchPad~
+  take note of what is the ~id~ value, call it ~$ID~
+  run ~xinput --disable $ID~
+* enable hardware virtualization
+  enter BIOS settings (immediately after startup, press Enter, then press F1)
+  go to Security>Virtualization
+  enable fields containing the word "Intel"
+  save and exit (F10)
+* apply hardware fixes
+  https://github.com/NixOS/nixos-hardware
+  #+begin_src shell
+  $ sudo nix-channel --add https://github.com/NixOS/nixos-hardware/archive/master.tar.gz nixos-hardware
+  $ sudo nix-channel --update nixos-hardware
+  #+end_src
+  Then import an appropriate profile path from the table below. For example, to enable ThinkPad X220 profile, your imports in /etc/nixos/configuration.nix should look like:
+  #+begin_src nix
+  imports = [
+    <nixos-hardware/lenovo/thinkpad/t490>
+    ./hardware-configuration.nix
+  ];
+  #+end_src
+* install relevant documentation in zeal
+  e.g. docker
+* manually import spacemacs configuration
+* configure cheat
+  mkdir -p ~/.config/cheat && cheat --init > ~/.config/cheat/conf.yml # generate config file
+  
