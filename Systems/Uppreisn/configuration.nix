@@ -16,7 +16,7 @@
   fonts.fontconfig.enable = true;
 
   services.xserver.displayManager.sessionCommands = ''
-    ${pkgs.feh}/bin/feh  --no-fehbg --bg-scale ~/Images/someima.jpg
+    ${pkgs.feh}/bin/feh  --no-fehbg --bg-scale ~/Images/800px-If_You_Talk_Too_Much_This_Man_May_Die_mirror.jpg
   '';
 
   boot.initrd.luks.devices = [
