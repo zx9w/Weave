@@ -1,0 +1,17 @@
+[ 0 | markdown | simple explanation | meta ]
+
+# The idea
+
+Sections are of the form '\n[#|..|..|..]\n'
+- First part is format
+- Second part is heading
+- Third part is tag
+
+References are of the form '\n[*..|..|..*]\n'
+- First part is parser
+- Second part is heading
+- Third part is link
+
+Metadata sections can be used to set variables or relations between tags.
+
+Probably even this is overcomplicated, looks like references and sections are the same thing.. I had some designs on paper, will check them in when I get to work.

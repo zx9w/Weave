@@ -1,7 +1,7 @@
 * Poorly Organized crap
 ** This repo
 
- Dotfiles
+ Config
  Overlays
  Systems
  Modules
@@ -84,7 +84,7 @@ This is my personal laptop.
 
 Statelessness, stability, flexibility, the usual suspects.
 
-** Dotfiles
+** Config
 
 *** Xmonad
 
