@@ -13,6 +13,10 @@
       ../../Modules/alias.nix
     ];
 
+  nix.nixPath =
+    options.nix.nixPath.default ++
+    [ "nixpkgs-overlays=~/Projects/Weave/Overlays" ];
+
   fonts.fontconfig.enable = true;
 
   services.xserver.displayManager.sessionCommands = ''
