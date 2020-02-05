@@ -4,4 +4,4 @@ Aliases don't tab complete and are wonky in other ways. It is better to just hav
 
 # Tip
 
-Use `tree .` or `tree . -L 2` to use this directory.
+Use `tree .` or `tree . -L 2` to browse this directory.
