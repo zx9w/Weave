@@ -6,6 +6,7 @@
       ./hardware-configuration.nix
       ../../Modules/retiolum.nix
       ../../Modules/neovim.nix
+      ../../Modules/berlin.nix
       ../../Modules/laptop.nix
       ../../Modules/x.nix
       ../../Modules/virtualisation.nix
