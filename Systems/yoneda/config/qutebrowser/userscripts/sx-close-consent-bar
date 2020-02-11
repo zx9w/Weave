@@ -1,0 +1,3 @@
+#! /usr/bin/env bash
+
+echo "jseval document.getElementsByClassName('grid--cell fc-white js-notice-close')[0].click()" >> $QUTE_FIFO

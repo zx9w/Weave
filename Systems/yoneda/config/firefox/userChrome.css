@@ -1,0 +1,93 @@
+@namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
+
+/* Re-order the toolbars */
+#nav-bar { -moz-box-ordinal-group: 1 !important; }
+#PersonalToolbar { -moz-box-ordinal-group: 2 !important; }
+#TabsToolbar { -moz-box-ordinal-group: 3 !important; }
+
+
+/*
+ * Make the toolbar extra-compact (similar to v56 with CTR)
+ *
+ * Applies to Compact density
+ *
+ * Contributor(s): Alex Vallat
+ */
+
+#urlbar,
+.searchbar-textbox {
+  font-size: unset !important;
+  min-height: 20px !important;
+  height: 20px !important;
+}
+
+#identity-box {
+  max-height: 18px;
+}
+
+#nav-bar .toolbarbutton-1 {
+  padding: 0px !important;
+}
+
+
+/* more compact navigation toolbar */
+#nav-bar #nav-bar-overflow-button,
+#nav-bar #nav-bar-customization-target > toolbarbutton,
+#nav-bar #nav-bar-customization-target > toolbaritem textbox,
+#nav-bar #nav-bar-customization-target #stop-reload-button > toolbarbutton {
+  margin: 0  !important;
+  padding: 0 !important;
+}
+
+#nav-bar #nav-bar-customization-target > toolbaritem{
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Hales */
+toolbarbutton, toolbaritem, .toolbarbutton-badge-stack
+{
+	height: 20px !important;
+	width: 20px !important;
+	
+	padding: 0 !important;
+	margin: 0 !important;
+}
+
+.toolbarbutton-icon
+{
+	padding: 2px !important;
+	margin: 0px !important;
+}
+
+.tabs-newtab-button .toolbarbutton-icon
+{
+	padding: 6px !important;
+}
+
+.tab-line
+{
+	background-color: orange !important;
+}
+
+#urlbar, .searchbar-textbox {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+#tabbrowser-tabs
+{
+  --tab-min-height: 20px !important;
+  --newtab-margin: -3px 0 -3px -3px !important;
+}
+.tabbrowser-tab {
+  max-height: var(--tab-min-height) !important;
+}
+.tabs-newtab-button{
+  margin: var(--newtab-margin) !important;
+}
+
+#reader-mode-button,
+#readinglist-addremove-button {
+ display:none !important;
+}
