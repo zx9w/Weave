@@ -1,0 +1,145 @@
+Vim-inspired configuration for xmonad. Most features live under the modifier
+key, here denoted ~M~.
+
+* Manipulating windows
+Layout control is identical to vanilla xmonad. The configuration adds support
+for locating, inserting, deleting, yanking, putting and tagging windows.
+
+| Keymap       | Effect                                            |
+|--------------+---------------------------------------------------|
+| ~M-/~        | Prompt for a window to be focused.                |
+| ~M-i~        | Prompt for a window to be inserted.               |
+| ~M-d~        | Delete the focused window.                        |
+| ~M-y~        | Yank the focused window.                          |
+| ~M-p~        | Put all yanked windows in active workspace.       |
+| ~M-<char>~   | Mark the focused window with a character.         |
+| ~M-'-<char>~ | Focus the window marked with the given character. |
+
+At the moment, the only characters that can be used as marks are ~a~, ~b~, ~m~, ~n~.
+Support for more characters is not difficult to implement, but an elegant
+abstraction has yet to be found.
+
+* Launching and focusing applications
+  In addition to the ~M-i~ keymap above, the window manager provides keymaps for
+  quickly launching ("running") or focusing ("raising") commonly used programs.
+  The basic behavior is known in xmonad parlance as "run or raise". The
+  configuration defines an abstraction called /applications/, which wraps data
+  associated with commonly used programs.
+
+  We illustrate the use of this abstraction by considering terminal emulators.
+  The configuration defines the following application:
+   #+begin_src haskell
+   urxvt       = App
+     { keyApp  =              "t"      -- hotkey for urxt
+     , findApp = className =? "URxvt"  -- class name (a property of X windows) for urxvt
+     , runApp  =  spawnHere   "urxvt"  -- command to run urxvt
+     }
+   #+end_src
+   
+  With this definition, pressing ~M-t~ will have the following effect,
+  depending on the state of the window manager.
+  
+  | State                        | Effect                            |
+  |------------------------------+-----------------------------------|
+  | No terminal window exists.   | A new terminal window is created. |
+  | Some terminal window exists. | Some terminal window is focused.  |
+ 
+  If more than one terminal window exists then holding ~M~ and repeatedly
+  pressing ~t~ will cycle through existing terminal windows.
+
+  The choice of which terminal window to focus is a possible area of
+  improvement. Currently, terminal windows are cycled in their order of
+  creation.
+  
+  When a terminal window exists, a new one can be created with ~M-S-t~.
+  
+  The configuration provides a number of applications besides ~urxvt~. The
+  current choice of hotkeys favors characters which are frequent in the english
+  language, to increase compatibility with ergonomic keyboard layouts such as
+  colemak.
+  
+  | Application | Hotkey |
+  |-------------+--------|
+  | Emacs       | e      |
+  | qutebrowser | o      |
+  | zathura     | a      |
+   
+* The abstract task tree
+  An /abstract task tree (ATT)/ is a finite directed rooted tree ~T~ with additional
+  struture, satisfying certain conditions. The nodes in the tree are called
+  /tasks/. Given tasks ~t_0~ and ~t_1~, we say that ~t_1~ is a /subtask/ of
+  ~t_0~ if there exists a directed edge from ~t_0~ to ~t_1~, denoted ~t_0 =>
+  t_1~. In that case we also say that ~t_1~ is a /dependency/ of ~t_0~, or that
+  ~t_0~ /depends/ on ~t_1~. We denote this situation ~t_0 => t_1~.
+  
+  The additional structure is as follows.
+  - A function ~h~ which singles out a single node called the /head/, thought of as the current task.
+  - A function ~c~ which assigns a binary value to each node. The binary values
+    are thought of as labels marking tasks as either /completed/ or
+    /uncompleted/.
+  
+  The structure above must satisfy the following axiom. For any tasks ~t_0~ and
+  ~t_1~, ~t_0 => t_1~ if and only if ~t_0~ cannot be completed unless ~t_1~ is
+  completed.
+ 
+  Let ~T~ be an ~ATT~. The /uncompleted task tree (UTT)/ of ~T~, denote ~U(T)~,
+  is the subtree of ~T~ consisting of uncompleted tasks. If ~U(T)=T~ then ~T~ is
+  said to be /full/. Exercise: show that the ~U(T)~ is an ATT.
+ 
+  Given an ATT consider the following (reversible) operations.
+  - Move the head one step along an edge.
+  - Mark the head as completed.
+  - Mark the head as uncompleted.
+
+  If the result of such an operation is again an ATT, then the operation is said
+  to be /legal/. A sequence of legal operations is called a /workflow/. A
+  workflow is said to /terminate/ if after taking UTTs it converges to the empty
+  ATT, i.e. all tasks are eventually completed through a sequence of legal
+  operations.
+
+  A rooted linear path in an ATT is called a /slice/. A sequence of slices
+  related by legal operations is called a /linear workflow/. A linear workflow
+  is said to /terminate/ if after taking UTTs it converges to the empty ATT,
+  i.e. all tasks are eventually completed through a sequence of legal
+  operations, while only maintaining a linear local representation of the ATT.
+ 
+** Discussion: constraints
+*** Tree representations
+    1. Human minds are inherently single-threaded and do a poor job of keeping a
+       mental representation of a tree. Navigating a tree requires difficult
+       decision making, as the value of each branch cannot be known before
+       exploration.
+    2. No compact graphical interfaces can accurately represent a large class of
+       trees.
+    3. Humans are not 
+*** Linearity
+    An ideal agent would have the ability to hold a representation of the entire
+    ATT. The human mind is more single-threaded, and completing tasks usually
+    looks as follows. Start task 1. Achieve some state on task 1 which makes the
+    user realize that task 1 depends on a subtask, task 2. Then either complete
+    task 2 and move back up to task 1, or move down to another subtask, task 3.
+*** Context switches
+    When engaged in a task, the user may want to trace back how the task was
+    initiated. This can be done by briefly moving the head to the parent task to
+    examine its state, which reflects the user's mindset when they chose to
+    initiate the subtask. This bears the possbility that the user will want to
+    initiate another subtask, resulting in a nonlinear state.
+    
+
+
+
+
+
+
+
+
+ 
+** Relation to window management
+   
+  | ATT                  | Window manager                   |
+  |----------------------+----------------------------------|
+  | task                 | workspace                        |
+  | dependent tasks      | adjacent workspaces              |
+  | completed task       | empty workspace                  |
+  | uncompleted task     | populated workspace              |
+  | move head along edge | shift to previous/next workspace |

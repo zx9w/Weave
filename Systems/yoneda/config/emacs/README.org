@@ -1,0 +1,5 @@
+Emacs configuration is not managed by nix.
+
+* Better way to insert src blocks
+  https://old.reddit.com/r/orgmode/comments/aaq76d/new_template_mechanism/
+  https://old.reddit.com/r/emacs/comments/ad68zk/get_easytemplates_back_in_orgmode_92/
