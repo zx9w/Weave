@@ -2,8 +2,6 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-# testing
-
 { config, pkgs, lib, ... }:
 
 {
@@ -15,6 +13,9 @@
       ../../Modules/x.nix
       ../../Modules/virtualisation.nix
       ../../Modules/alias.nix
+      ../../Modules/bluetooth.nix
+      ../../Modules/berlin.nix
+      ../../secret/Modules/openvpn.nix
     ];
 
   boot.initrd.luks.devices = [
@@ -72,7 +73,7 @@
     fzf firefox which openssl gnupg libreoffice
     gimp-with-plugins zathura file jq scrot vlc
     tinc acpi unstable.go unstable.openssh
-    wpa_supplicant wpa_supplicant_gui
+    wpa_supplicant wpa_supplicant_gui pavucontrol
     haskellPackages.ghc
     haskellPackages.stack
     haskellPackages.cabal-install
@@ -81,7 +82,7 @@
   # use shells for things like:
   # pkgconfig gnumake gcc binutils
 
-  documentation.man.enable = true; 
+  documentation.man.enable = true;
 
   programs = {
     command-not-found.enable = true;
@@ -100,7 +101,7 @@
 
   # services.acpid = {
   #   enable = true;
-  #   handlers 
+  #   handlers
 
   environment.variables = {
     GOPATH = "/home/ilmu/Work/Go";
@@ -112,11 +113,9 @@
     DEFAULT_CLIENT_SECRET = "g63ocune04hnr6a5136y3vcwpsidijxo";
   };
 
-
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   # programs.mtr.enable = true;
-  # programs.gnupg.agent = { enable = true; enableSSHSupport = true; };
 
   # List services that you want to enable:
 
@@ -128,7 +127,7 @@
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
- 
+
   # Postgres stuff, in case I want to enable it in the future.
   # services.postgresql = {
   #   enable = true;
@@ -164,6 +163,7 @@
   # Enable sound.
   sound.enable = true;
   hardware.pulseaudio.enable = true;
+  hardware.pulseaudio.package = pkgs.pulseaudioFull;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.groups.rishi = {

@@ -8,6 +8,7 @@
     layout = "us,is";
     xkbOptions = "eurosign:e";
     libinput.enable = true; # Enable touchpad support.
+
     windowManager.xmonad = {
       enable = true;
       enableContribAndExtras = true;
@@ -16,9 +17,14 @@
         haskellPackages.xmonad-extras
         haskellPackages.xmonad-contrib
       ];
-      config = ../Dotfiles/Xmonad/xmonad.hs;
+      config = ../Config/Xmonad/xmonad.hs;
     };
     windowManager.default = "xmonad";
+
+    # TODO: Make x.nix take argument for setting background in config.
+    displayManager.sessionCommands = ''
+      ${pkgs.feh}/bin/feh --no-fehbg --bg-max ~/Memes/108-architecture.png
+    '';
   };
 
 

@@ -10,8 +10,8 @@
     # brightness.night = "0.4"; # min 0.1
     temperature.day   = 5500; # default d: 5500, n: 3700
     temperature.night = 2700; # possible: 1000-25000
-    latitude = "52.3";
-    longitude = "13.2";
+    # latitude = "52.3";
+    # longitude = "13.2";
     # provider = "geoclue2"; # must specify lat/lon if "manual"
   };
 
