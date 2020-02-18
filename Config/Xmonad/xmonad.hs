@@ -14,7 +14,7 @@ import XMonad.Layout.NoBorders (noBorders)
 import XMonad.Layout.ResizableTile (ResizableTall(..))
 import XMonad.Layout.ToggleLayouts (ToggleLayout(..), toggleLayouts)
 
-import XMonad.Prompt (autoComplete, font, searchPredicate, XPConfig)
+import XMonad.Prompt
 import XMonad.Prompt.AppLauncher
 import XMonad.Prompt.Shell
 
@@ -35,8 +35,7 @@ main = do
     , logHook            = dynamicLogString def >>= xmonadPropLog
     }
     `additionalKeysP`
-      [ ("M-S-q", confirmPrompt myXPConfig "exit" (io exitSuccess))
-      , ("M-p", shellPrompt myXPConfig)
+      [ ("M-p", shellPrompt myXPConfig)
       , ("M-<Esc>", sendMessage (Toggle "Full"))
       ]
 
@@ -44,12 +43,14 @@ myLayouts = toggleLayouts (noBorders Full) others
   where
     others = ResizableTall 1 (1.5/100) (3/5) [] ||| emptyBSP
 
-myXPConfig = def
-  { position          = Top
-  , alwaysHighlight   = True
-  , promptBorderWidth = 0
-  , font              = "xft:monospace:size=9"
-  }
+myXPConfig =
+  XPC { position          = Top
+      , alwaysHighlight   = True
+      , promptBorderWidth = 0
+      , font              = "xft:monospace:size=9"
+      , height            = 16
+      , historySize       = 256
+      }
 
 myManageHook = composeAll . concat $
     [ [ className =? c --> doFloat           | c <- myFloats]
