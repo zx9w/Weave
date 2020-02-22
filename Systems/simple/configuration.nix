@@ -31,16 +31,7 @@
   boot.loader.efi.canTouchEfiVariables = true;
 
   networking.hostName = "simple-nixos"; # Define your hostname.
-  # Not compatible with the networkmanager.enable option.
-  networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
-  networking.supplicant = {
-    "wlp61s0" = {
-      extraConf = ''
-        update_config=1
-      '';
-    };
-  };
-  # networking.networkmanager.enable = true;
+  networking.networkmanager.enable = true;
 
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
