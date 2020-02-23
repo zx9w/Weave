@@ -8,6 +8,7 @@
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
+      ../../Overlays/nix-writers.nix
       ../../Modules/neovim.nix
       ../../Modules/laptop.nix
       ../../Modules/x.nix
