@@ -10,7 +10,6 @@
       ./hardware-configuration.nix
       ../../Modules/neovim.nix
       ../../Modules/laptop.nix
-      ../../Modules/util.nix
       ../../Modules/x.nix
       ../../Modules/virtualisation.nix
       ../../Modules/alias.nix
@@ -48,12 +47,30 @@
   # Set your time zone.
   time.timeZone = "Europe/Berlin";
 
- nixpkgs.config = {
+ nixpkgs.config =
+   let
+     haskell-overrides = self: super: {
+       xmonad-stockholm = (self.callPackage ../../Libraries/xmonad-stockholm.nix);
+     };
+   in
+  {
     packageOverrides = oldpkgs: {
       unstable = import <nixos-unstable> {
         config = config.nixpkgs.config;
       };
       xmonad-user = (oldpkgs.callPackage ../../Packages/xmonad.nix {username="ilmu";});
+      haskellPackages = oldpkgs.haskellPackages.override {
+        overrides = haskell-overrides;
+      };
+      haskell = oldpkgs.haskell // {
+        packages = lib.mapAttrs (name: value:
+          if lib.hasAttr "override" value
+          then value.override {
+            overrides =  haskell-overrides;
+          }
+          else value
+        ) oldpkgs.haskell.packages;
+      };
     };
   };
 
@@ -66,7 +83,7 @@
     fzf firefox which openssl gnupg libreoffice
     gimp-with-plugins zathura file jq scrot vlc
     tinc acpi unstable.go unstable.openssh
-    pavucontrol cowsay
+    wpa_supplicant wpa_supplicant_gui pavucontrol
     haskellPackages.ghc
     haskellPackages.stack
     haskellPackages.cabal-install

@@ -1,4 +1,4 @@
-{ config, pkgs, options, ... }:
+{ config, pkgs, lib, options, ... }:
 
 {
   imports =
@@ -126,7 +126,7 @@
   services.postgresql = {
     enable = true;
     package = pkgs.postgresql96;
-    authentication = pkgs.lib.mkOverride 10 ''
+    authentication = lib.mkOverride 10 ''
       local all all trust
       host all all ::1/128 trust
     '';

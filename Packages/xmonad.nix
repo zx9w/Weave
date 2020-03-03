@@ -1,7 +1,20 @@
+{ pkgs, username, ... }:
+  pkgs.writers.writeHaskellBin "xmonad" {
+    libraries = [
+      pkgs.haskellPackages.xmonad
+      pkgs.haskellPackages.xmonad-extras
+      pkgs.haskellPackages.xmonad-contrib
+      (pkgs.haskellPackages.callPackage ../Libraries/xmonad-stockholm.nix {})
+    ];
+  } /* haskell */ ''
+{-# LANGUAGE LambdaCase #-}
+
 module Main (main) where
 import XMonad
 
 import System.Exit
+import System.IO (hPutStrLn, stderr)
+import System.Environment (getArgs)
 
 import qualified XMonad.StackSet as W
 import XMonad.Config.Desktop
@@ -14,48 +27,40 @@ import XMonad.Layout.NoBorders (noBorders)
 import XMonad.Layout.ResizableTile (ResizableTall(..))
 import XMonad.Layout.ToggleLayouts (ToggleLayout(..), toggleLayouts)
 
-import XMonad.Prompt
-import XMonad.Prompt.AppLauncher
-import XMonad.Prompt.Shell
-
 import XMonad.Util.EZConfig
 import XMonad.Util.NamedWindows (getName, unName)
 import XMonad.Util.Run (safeSpawn)
 
+import XMonad.Stockholm.Shutdown (newShutdownEventHandler, shutdown)
 
-main = do
+main :: IO ()
+main = getArgs >>= \case
+    [] -> main'
+    ["--shutdown"] -> shutdown
+    args -> hPutStrLn stderr ("bad arguments: " <> show args) >> exitFailure
+
+main' :: IO ()
+main' = do
+  handleShutdownEvent <- newShutdownEventHandler
   launch $ desktopConfig
     { borderWidth        = 2
     , modMask            = mod4Mask -- windows key
-    , terminal           = "${kitty}/bin/kitty"
+    , terminal           = "${pkgs.kitty}/bin/kitty"
     , normalBorderColor  = "#cccccc"
     , focusedBorderColor = "#cd8b00"
     , manageHook         = myManageHook <+> manageHook desktopConfig
     , layoutHook         = desktopLayoutModifiers $ myLayouts
     , logHook            = dynamicLogString def >>= xmonadPropLog
+    , handleEventHook    = handleShutdownEvent
     }
     `additionalKeysP`
-      [ ("M-t", shellPrompt myXPConfig)
-      , ("M-<Esc>", sendMessage (Toggle "Full"))
+      [ ("M-t", sendMessage (Toggle "Full"))
+      , ("M-L", safeSpawn "${pkgs.slock}/bin/slock" [])
       ]
 
 myLayouts = toggleLayouts (noBorders Full) others
   where
     others = ResizableTall 1 (1.5/100) (3/5) [] ||| emptyBSP
-
-myXPConfig = def
-  { position = Top
-  , alwaysHighlight = True
-  , promptBorderWidth = 0
-  , font = "xft:monospace:size=9"
-  }
---XPC { position          = Top
---    , alwaysHighlight   = True
---    , promptBorderWidth = 0
---    , font              = "xft:monospace:size=9"
---    , height            = 16
---    , historySize       = 256
---    }
 
 myManageHook = composeAll . concat $
     [ [ className =? c --> doFloat           | c <- myFloats]
@@ -66,3 +71,4 @@ myManageHook = composeAll . concat $
   where myFloats      = ["MPlayer", "Gimp"]
         myOtherFloats = ["alsamixer"]
         webApps       = ["Firefox-bin"]
+''
