@@ -19,8 +19,8 @@
       windowManager.default = "xmonad";
       windowManager.session = [{
         name = "xmonad";
-          # ${pkgs.xorg.xhost}/bin/xhost +LOCAL:
         start = ''
+          ${pkgs.xorg.xhost}/bin/xhost +LOCAL:
           ${pkgs.systemd}/bin/systemctl --user start xmonad
           exec ${pkgs.coreutils}/bin/sleep infinity
         '';
@@ -33,6 +33,8 @@
       };
     };
 
+    # breaks xmonad
+    # DISPLAY = ":${toString config.services.xserver.display}";
     systemd.user.services.xmonad = {
       environment = {
         XMONAD_DATA_DIR = "/tmp";
