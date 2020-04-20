@@ -19,10 +19,12 @@ import System.Environment (getArgs)
 import qualified XMonad.StackSet as W
 import XMonad.Config.Desktop
 
+import XMonad.Actions.Navigation2D
+
 import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.ManageHelpers
 
-import XMonad.Layout.BinarySpacePartition (emptyBSP)
+import qualified XMonad.Layout.BinarySpacePartition as BSP
 import XMonad.Layout.NoBorders (noBorders)
 import XMonad.Layout.ResizableTile (ResizableTall(..))
 import XMonad.Layout.ToggleLayouts (ToggleLayout(..), toggleLayouts)
@@ -33,6 +35,13 @@ import XMonad.Util.Run (safeSpawn)
 
 import XMonad.Stockholm.Shutdown (newShutdownEventHandler, shutdown)
 
+myLocalMod = mod4Mask -- This is caps lock
+-- myGlobalMod -- will be windows key
+myTerminal = "${pkgs.kitty}/bin/kitty"
+myLaunchTerminal = "${pkgs.alacritty}/bin/alacritty"
+myNormalBorderColor = "#cccccc"
+myFocusedBorderColor = "#cd8b00"
+
 main :: IO ()
 main = getArgs >>= \case
     [] -> main'
@@ -42,25 +51,42 @@ main = getArgs >>= \case
 main' :: IO ()
 main' = do
   handleShutdownEvent <- newShutdownEventHandler
-  launch $ desktopConfig
+  launch $ nav $ desktopConfig
     { borderWidth        = 2
-    , modMask            = mod4Mask -- windows key
-    , terminal           = "${pkgs.kitty}/bin/kitty"
-    , normalBorderColor  = "#cccccc"
-    , focusedBorderColor = "#cd8b00"
+    , modMask            = myLocalMod
+    , terminal           = myTerminal
+    , normalBorderColor  = myNormalBorderColor
+    , focusedBorderColor = myFocusedBorderColor
     , manageHook         = myManageHook <+> manageHook desktopConfig
     , layoutHook         = desktopLayoutModifiers $ myLayouts
     , logHook            = dynamicLogString def >>= xmonadPropLog
     , handleEventHook    = handleShutdownEvent
-    }
-    `additionalKeysP`
-      [ ("M-t", sendMessage (Toggle "Full"))
-      , ("M-L", safeSpawn "${pkgs.slock}/bin/slock" [])
-      ]
+    } `additionalKeysP`    (keyState Insert)
+
+
+nav :: XConfig l -> XConfig l
+nav = navigation2D def (xK_k, xK_h, xK_j, xK_l) [(myLocalMod, windowGo), (myLocalMod .|. shiftMask, windowSwap)] False
+
+data ActiveBindings = Insert | Travel | Shuffle | Overview
+
+keyState :: ActiveBindings -> [(String, X ())]
+keyState Insert = [ ("M-g", sendMessage (Toggle "Full"))
+                  , ("M-S-l", safeSpawn "${pkgs.slock}/bin/slock" [])
+                  , ("M-,", sendMessage Shrink)
+                  , ("M-.", sendMessage Expand)
+                  , ("M-a", sendMessage $ BSP.Rotate)
+                  , ("M-s", sendMessage $ BSP.Swap)
+                  , ("M-d", sendMessage $ BSP.FocusParent)
+                  , ("M-f", sendMessage $ BSP.SelectNode)
+                  , ("M-z", spawn $ myTerminal)
+                  , ("M-x", spawn $ myLaunchTerminal)
+                  , ("M-c", kill)
+                  ]
+keyState _ = error "Not yet implemented, look up how to do dynamic keybinds in xmonad"
 
 myLayouts = toggleLayouts (noBorders Full) others
   where
-    others = ResizableTall 1 (1.5/100) (3/5) [] ||| emptyBSP
+    others = {- ResizableTall 1 (1.5/100) (3/5) [] ||| -} BSP.emptyBSP
 
 myManageHook = composeAll . concat $
     [ [ className =? c --> doFloat           | c <- myFloats]
