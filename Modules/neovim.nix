@@ -50,6 +50,7 @@
               vim-javascript
               purescript-vim
               vim-nix
+              vim-go
               vim-toml
               vimtex
               (pkgs.vimUtils.buildVimPluginFrom2Nix {
