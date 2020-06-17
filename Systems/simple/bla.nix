@@ -10,7 +10,6 @@
       ./hardware-configuration.nix
       ../../Modules/neovim.nix
       ../../Modules/laptop.nix
-      ../../Modules/util.nix
       ../../Modules/x.nix
       ../../Modules/virtualisation.nix
       ../../Modules/alias.nix
@@ -19,12 +18,13 @@
       ../../secret/Modules/openvpn.nix
     ];
 
-  boot.initrd.luks.devices = {
-    root = {
+  boot.initrd.luks.devices = [
+    {
+      name = "root";
       device = "/dev/nvme0n1p2";
       preLVM = true;
-    };
-  };
+    }
+  ];
 
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
@@ -38,23 +38,39 @@
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
   # Select internationalisation properties.
-  console = {
-    font = "Lat2-Terminus16";
-    keyMap = "us";
+  i18n = {
+    consoleFont = "Lat2-Terminus16";
+    consoleKeyMap = "us";
+    defaultLocale = "en_US.UTF-8";
   };
-
-  i18n.defaultLocale = "en_US.UTF-8";
 
   # Set your time zone.
   time.timeZone = "Europe/Berlin";
 
- nixpkgs.config = {
-    allowUnfree = true;
+ nixpkgs.config =
+   let
+     haskell-overrides = self: super: {
+       xmonad-stockholm = (self.callPackage ../../Libraries/xmonad-stockholm.nix);
+     };
+   in
+  {
     packageOverrides = oldpkgs: {
       unstable = import <nixos-unstable> {
         config = config.nixpkgs.config;
       };
       xmonad-user = (oldpkgs.callPackage ../../Packages/xmonad.nix {username="ilmu";});
+      haskellPackages = oldpkgs.haskellPackages.override {
+        overrides = haskell-overrides;
+      };
+      haskell = oldpkgs.haskell // {
+        packages = lib.mapAttrs (name: value:
+          if lib.hasAttr "override" value
+          then value.override {
+            overrides =  haskell-overrides;
+          }
+          else value
+        ) oldpkgs.haskell.packages;
+      };
     };
   };
 
@@ -67,7 +83,7 @@
     fzf firefox which openssl gnupg libreoffice
     gimp-with-plugins zathura file jq scrot vlc
     tinc acpi unstable.go unstable.openssh
-    pavucontrol steam
+    wpa_supplicant wpa_supplicant_gui pavucontrol
     haskellPackages.ghc
     haskellPackages.stack
     haskellPackages.cabal-install
@@ -158,11 +174,6 @@
   sound.enable = true;
   hardware.pulseaudio.enable = true;
   hardware.pulseaudio.package = pkgs.pulseaudioFull;
-
-  # Needed for steam
-  hardware.opengl.driSupport32Bit = true;
-  hardware.opengl.extraPackages32 = with pkgs.pkgsi686Linux; [ libva ];
-  hardware.pulseaudio.support32Bit = true;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.groups.rishi = {

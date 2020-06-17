@@ -75,8 +75,6 @@
         };
       };
   };
-  environment.variables.EDITOR = pkgs.lib.mkForce "nvim";
-  environment.variables.VISUAL = pkgs.lib.mkForce "nvim";
   environment.shellAliases.vi = "nvim";
 
   environment.systemPackages = [ pkgs.nvim ];

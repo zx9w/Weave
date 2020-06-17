@@ -1,36 +1,51 @@
-{ pkgs, ... }:
+{ config, options, pkgs, lib, ... }:
 {
-  # let xmonad-ilmu = import...
-#in
-  # Enable the X11 windowing system.
-  services.xserver = {
-    enable = true;
-    layout = "us,is";
-    xkbOptions = "eurosign:e";
-    libinput.enable = true; # Enable touchpad support.
-
-    windowManager.xmonad = {
-      enable = true;
-      enableContribAndExtras = true;
-      extraPackages = haskellPackages: [
-        haskellPackages.xmonad
-        haskellPackages.xmonad-extras
-        haskellPackages.xmonad-contrib
-      ];
-      config = ../Config/Xmonad/xmonad.hs;
+  options = {
+    services.xserver.displayManager.background = lib.options.mkOption {
+      type = lib.types.path;
+      example = /path/to/picture;
+      default = ~/Memes/108-architecture.png;
+      description = "Path to desktop background";
     };
-    windowManager.default = "xmonad";
-
-    # TODO: Make x.nix take argument for setting background in config.
-    displayManager.sessionCommands = ''
-      ${pkgs.feh}/bin/feh --no-fehbg --bg-max ~/Memes/108-architecture.png
-    '';
   };
 
+  config = {
+    # Enable the X11 windowing system.
+    services.xserver = {
+      enable = true;
+      layout = "us,is";
+      xkbOptions = "caps:hyper";
+      libinput.enable = true; # Enable touchpad support.
+      windowManager.session = [{
+        name = "xmonad";
+        start = ''
+          ${pkgs.xorg.xhost}/bin/xhost +LOCAL:
+          ${pkgs.systemd}/bin/systemctl --user start xmonad
+          exec ${pkgs.coreutils}/bin/sleep infinity
+        '';
+      }];
 
-  services.xserver.displayManager.sddm.enable = true;
+      displayManager = {
+        defaultSession = "none+xmonad";
+        sessionCommands = ''
+          ${pkgs.feh}/bin/feh  --no-fehbg --bg-scale ~/Memes/photo6001086777835762275.jpg 
+        '';
+          #${pkgs.feh}/bin/feh --no-fehbg --bg-max ${toString config.services.xserver.displayManager.background}
+      };
+    };
 
-  # Enable the KDE Desktop Environment - Disable ASAP
-  services.xserver.desktopManager.plasma5.enable = true;
-
+    # breaks xmonad
+    # DISPLAY = ":${toString config.services.xserver.display}";
+    systemd.user.services.xmonad = {
+      environment = {
+        XMONAD_DATA_DIR = "/tmp";
+      };
+      serviceConfig = {
+        SyslogIdentifier = "xmonad";
+        ExecStart = "${pkgs.xmonad-user}/bin/xmonad";
+        ExecStop = "${pkgs.xmonad-user}/bin/xmonad --shutdown";
+      };
+      restartIfChanged = false;
+    };
+  };
 }
