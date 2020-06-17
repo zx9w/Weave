@@ -16,7 +16,6 @@
       layout = "us,is";
       xkbOptions = "caps:hyper";
       libinput.enable = true; # Enable touchpad support.
-      windowManager.default = "xmonad";
       windowManager.session = [{
         name = "xmonad";
         start = ''
@@ -27,9 +26,11 @@
       }];
 
       displayManager = {
+        defaultSession = "none+xmonad";
         sessionCommands = ''
-          ${pkgs.feh}/bin/feh --no-fehbg --bg-max ${toString config.services.xserver.displayManager.background}
+          ${pkgs.feh}/bin/feh  --no-fehbg --bg-scale ~/Memes/photo6001086777835762275.jpg 
         '';
+          #${pkgs.feh}/bin/feh --no-fehbg --bg-max ${toString config.services.xserver.displayManager.background}
       };
     };
 

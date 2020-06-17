@@ -19,13 +19,12 @@
       ../../secret/Modules/openvpn.nix
     ];
 
-  boot.initrd.luks.devices = [
-    {
-      name = "root";
+  boot.initrd.luks.devices = {
+    root = {
       device = "/dev/nvme0n1p2";
       preLVM = true;
-    }
-  ];
+    };
+  };
 
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
@@ -39,16 +38,18 @@
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
   # Select internationalisation properties.
-  i18n = {
-    consoleFont = "Lat2-Terminus16";
-    consoleKeyMap = "us";
-    defaultLocale = "en_US.UTF-8";
+  console = {
+    font = "Lat2-Terminus16";
+    keyMap = "us";
   };
+
+  i18n.defaultLocale = "en_US.UTF-8";
 
   # Set your time zone.
   time.timeZone = "Europe/Berlin";
 
  nixpkgs.config = {
+    allowUnfree = true;
     packageOverrides = oldpkgs: {
       unstable = import <nixos-unstable> {
         config = config.nixpkgs.config;
@@ -66,7 +67,7 @@
     fzf firefox which openssl gnupg libreoffice
     gimp-with-plugins zathura file jq scrot vlc
     tinc acpi unstable.go unstable.openssh
-    pavucontrol cowsay
+    pavucontrol steam
     haskellPackages.ghc
     haskellPackages.stack
     haskellPackages.cabal-install
@@ -157,6 +158,11 @@
   sound.enable = true;
   hardware.pulseaudio.enable = true;
   hardware.pulseaudio.package = pkgs.pulseaudioFull;
+
+  # Needed for steam
+  hardware.opengl.driSupport32Bit = true;
+  hardware.opengl.extraPackages32 = with pkgs.pkgsi686Linux; [ libva ];
+  hardware.pulseaudio.support32Bit = true;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.groups.rishi = {
