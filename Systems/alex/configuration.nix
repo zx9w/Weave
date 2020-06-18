@@ -18,8 +18,8 @@
       ../../Modules/berlin.nix
     ];
 
+
   # Use the systemd-boot EFI boot loader.
-  boot.loader.grub.device = "/dev/sda";
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
@@ -57,7 +57,7 @@
     fzf firefox which openssl gnupg libreoffice
     gimp-with-plugins zathura file jq scrot vlc
     tinc acpi go openssh
-    pavucontrol steam
+    pavucontrol steam qutebrowser
     haskellPackages.ghc
     haskellPackages.stack
     haskellPackages.cabal-install
@@ -120,10 +120,10 @@
 
   environment.shellAliases = lib.mkForce {
     ls="ls -h --color=auto --group-directories-first";
-    iskb="setxkbmap de";
+    dekb="setxkbmap de";
     uskb="setxkbmap us";
     todo="cat ~/todo.txt";
-    toedit="vi ~/todo.txt";
+    toedit="nvim ~/todo.txt";
     ec="emacsclient -c --socket-name=memacs";
   };
 
@@ -147,22 +147,10 @@
     gid = 1666;
   };
 
-  users.users.ilmu = {
+  users.users.alex = {
     isNormalUser = true;
     uid = 1000;
     extraGroups = [ "wheel" "docker" "vboxusers" "networkmanager" "rishi" ];
-  };
-
-  users.users.auxmu = {
-    isNormalUser = true;
-    uid = 1001;
-    extraGroups = [ "wheel" "docker" "networkmanager" ];
-  };
-
-  users.users.gomu = {
-    isNormalUser = true;
-    uid = 1002;
-    extraGroups = [ "wheel" "docker" "networkmanager" ];
   };
 
   # As of now this doesn't work but it needs to be done to own the user.
