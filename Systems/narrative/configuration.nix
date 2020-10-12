@@ -25,24 +25,26 @@
     };
   };
 
-  boot.loader.efi.canTouchEfiVariables = false;
-  boot.loader.efi.efiSysMountPoint = "/boot/efi";
+  boot.loader.systemd-boot.enable = true;
+  boot.loader.efi.canTouchEfiVariables = true;
+  # boot.loader.efi.efiSysMountPoint = "/boot/efi";
   
-  boot.loader.grub = {
-    enable = true;
-    version = 2;
-    device = "nodev";
-    efiSupport = true;
-    enableCryptodisk = true;
-    efiInstallAsRemovable = true;
+  
+ # boot.loader.grub = {
+ #   enable = true;
+ #   version = 2;
+ #   device = "nodev";
+ #   efiSupport = true;
+ #   enableCryptodisk = true;
+ #   efiInstallAsRemovable = true;
 #    Broken currently in nixpkgs.
 #    trustedBoot = {
 #      enable = true;
 #      systemHasTPM = "YES_TPM_is_activated";
 #    };
-  };
+ # };
 
-  networking.hostName = "narrative-nixos"; # Define your hostname.
+  networking.hostName = "narrative"; # Define your hostname.
   networking.networkmanager.enable = true;
 
   # The global useDHCP flag is deprecated, therefore explicitly set to false here.
