@@ -19,6 +19,8 @@
     ];
 
   # This config is for a usb stick to keep around.
+  # $ nix-shell -I nixpkgs=channel:nixos-unstable -p nixos-generators
+  # $ nixos-generate -I nixpkgs=channel:nixos-unstable -f iso -c configuration.nix
 
   networking.hostName = "parasite"; # Define your hostname.
   networking.networkmanager.enable = true;
@@ -57,23 +59,60 @@
     };
   };
 
-  # List packages installed in system profile. To search, run:
-  # $ nix search wget
   environment.systemPackages = with pkgs; [
-    wget vim curl emacs git zlib tmux feh
-    xfontsel xlsfonts xscreensaver xclip
-    tree htop imagemagick ripgrep fd
-    which openssl gnupg libreoffice kitty
-    gimp-with-plugins zathura file scrot
-    tinc acpi openssh pavucontrol vlc
-    nitrokey-app firefox qutebrowser
-    nixos-generators sbcl
+
+    # Work with files
+    vim emacs tmux
+    git gitui
+    zlib zip unzip
+    pandoc p7zip
+
+    # Search, query and overview
+    ripgrep fd
+    which file
+    tree bat tokei
+
+    # Monitor or configure
+    htop acpi procs
+    pavucontrol arandr navi
+
+    # X stuff
+    xfontsel xlsfonts xscreensaver xclip xmobar
+
+    # Image makers
+    imagemagick gimp-with-plugins inkscape krita
+    scrot
+
+    # Viewers
+    kitty libreoffice zathura vlc feh viu
+
+    # Security
+    openssl gnupg openssh tinc nitrokey-app
+
+    # Make more parasites
+    nixos-generators
+
+    # Internet
+    brave firefox qutebrowser
+    wget curl
+    wireshark
+    youtube-dl rtorrent
+
+    # Communication
+    wire-desktop tdesktop signal-desktop
+    texlive gnuplot
+
+    # Programming
+    sbcl racket guile clojure
+    gcc cargo racer rustup zig
+    julia jq go dhall
+    lean coq agda # idris
     haskellPackages.ghc
     haskellPackages.cabal-install
-  ];
 
-  # use shells for things like:
-  # pkgconfig gnumake gcc binutils
+    # Program Analysis
+    valgrind gdb binutils hyperfine pkgconfig
+  ];
 
   documentation.man.enable = true;
 
@@ -86,48 +125,6 @@
       enableSSHSupport = true;
     };
   };
-
-  # Want to set up bouncer
-  #services.tinc = {
-  #  networks
-  #}
-
-  # services.acpid = {
-  #   enable = true;
-  #   handlers
-
-  # environment.variables = {
-  # };
-
-  # Some programs need SUID wrappers, can be configured further or are
-  # started in user sessions.
-  # programs.mtr.enable = true;
-
-  # List services that you want to enable:
-
-  # Enable the OpenSSH daemon.
-  # services.openssh.enable = true;
-
-  # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
-  # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
-
-  # Postgres stuff, in case I want to enable it in the future.
-  # services.postgresql = {
-  #   enable = true;
-  #   package = pkgs.postgresql;
-  #   authentication = pkgs.lib.mkOverride 10 ''
-  #     local all all trust
-  #     host all all ::1/128 trust
-  #   '';
-  #   initialScript = pkgs.writeText "backend-init-script" ''
-  #     CREATE ROLE ilmu CREATEDB;
-  #     CREATE DATABASE somedb;
-  #     GRANT ALL PRIVILEGES ON DATABASE somedb TO ilmu;
-  #   '';
-  # };
 
   environment.shellAliases = lib.mkForce {
     ls="ls -h --color=auto --group-directories-first";
