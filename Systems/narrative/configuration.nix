@@ -7,7 +7,7 @@
 {
   imports =
     [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
+ #     ./hardware-configuration.nix
       ../../Modules/neovim.nix
       ../../Modules/laptop.nix
       ../../Modules/util.nix
@@ -18,18 +18,25 @@
       ../../Modules/berlin.nix
     ];
 
-  boot.initrd.luks.devices = {
-    root = {
-      device = "/dev/sda6";
-      preLVM = true;
-    };
-  };
+#  boot.initrd.luks.devices = {
+#    root = {
+#      device = "/dev/sda6";
+#      preLVM = true;
+#    };
+#  };
+# 
+#  environment.etc = {
+#    signed-boot = {
+#      source= ../w_signed_boot/configuration.nix;
+#      mode = "0440";
+#    };
+#  };
+# 
+#  boot.loader.systemd-boot.enable = true;
+#  boot.loader.efi.canTouchEfiVariables = true;
+#  # boot.loader.efi.efiSysMountPoint = "/boot/efi";
 
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-  # boot.loader.efi.efiSysMountPoint = "/boot/efi";
-  
-  
+
  # boot.loader.grub = {
  #   enable = true;
  #   version = 2;
@@ -86,11 +93,12 @@
   environment.systemPackages = with pkgs; [
     wget vim curl emacs git zlib tmux feh
     xfontsel xlsfonts xscreensaver xclip
-    tree htop imagemagick ripgrep alacritty
+    tree htop imagemagick ripgrep
     which openssl gnupg libreoffice kitty
     gimp-with-plugins zathura file scrot
     tinc acpi openssh pavucontrol vlc
-    nitrokey-app firefox qutebrowser 
+    nitrokey-app firefox qutebrowser
+    nixos-generators
     haskellPackages.ghc
     haskellPackages.cabal-install
   ];
@@ -154,7 +162,7 @@
 
   environment.shellAliases = lib.mkForce {
     ls="ls -h --color=auto --group-directories-first";
-    todo="cat ~/todo.txt";
+    todo="touch ~/todo.txt && cat ~/todo.txt";
     toedit="nvim ~/todo.txt";
   };
 
@@ -173,6 +181,7 @@
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.ilmu = {
     isNormalUser = true;
+    password = "password";
     uid = 1000;
     extraGroups = [ "wheel" "docker" "vboxusers" "networkmanager" ];
   };
