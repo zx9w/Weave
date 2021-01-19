@@ -100,7 +100,7 @@
 
     # Communication
     wire-desktop tdesktop signal-desktop
-    texlive gnuplot
+    texlive.combined.scheme-full gnuplot
 
     # Programming
     sbcl racket guile clojure
