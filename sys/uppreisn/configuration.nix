@@ -4,14 +4,14 @@
   imports =
     [
       ./hardware-configuration.nix
-      ../../Modules/retiolum.nix
-      ../../Modules/neovim.nix
-      ../../Modules/berlin.nix
-      ../../Modules/laptop.nix
-      ../../Modules/x.nix
-      ../../Modules/virtualisation.nix
-      ../../Modules/util.nix
-      ../../Modules/alias.nix
+      ../../mod/retiolum.nix
+      ../../mod/neovim.nix
+      ../../mod/berlin.nix
+      ../../mod/laptop.nix
+      ../../mod/x.nix
+      ../../mod/virtualisation.nix
+      ../../mod/util.nix
+      ../../mod/alias.nix
     ];
 
   nix.nixPath =
@@ -86,11 +86,11 @@
     inkscape which xorg.xev acpi arandr
     pavucontrol font-awesome_5 pass
     binutils gcc gnumake openssl pkgconfig
-    (callPackage ../../Packages/Utils/know.nix {todofilepath = "~/Projects/Forever/todo.txt";})
-    (callPackage ../../Packages/Aliases/ilmu/iskb.nix {})
-    (callPackage ../../Packages/Aliases/ilmu/uskb.nix {})
-    (callPackage ../../Packages/Aliases/ilmu/todo.nix {todofilepath = "~/Projects/Forever/todo.txt";})
-    (callPackage ../../Packages/Aliases/ilmu/toedit.nix {todofilepath = "~/Projects/Forever/todo.txt";})
+    (callPackage ../../pkg/Utils/know.nix {todofilepath = "~/Projects/Forever/todo.txt";})
+    (callPackage ../../pkg/Aliases/ilmu/iskb.nix {})
+    (callPackage ../../pkg/Aliases/ilmu/uskb.nix {})
+    (callPackage ../../pkg/Aliases/ilmu/todo.nix {todofilepath = "~/Projects/Forever/todo.txt";})
+    (callPackage ../../pkg/Aliases/ilmu/toedit.nix {todofilepath = "~/Projects/Forever/todo.txt";})
   ];
 
   # Some programs need SUID wrappers, can be configured further or are

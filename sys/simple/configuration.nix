@@ -8,22 +8,29 @@
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
-      ../../Modules/neovim.nix
-      ../../Modules/laptop.nix
-      ../../Modules/util.nix
-      ../../Modules/x.nix
-      ../../Modules/virtualisation.nix
-      ../../Modules/alias.nix
-      ../../Modules/bluetooth.nix
-      ../../Modules/berlin.nix
+      ../../mod/neovim.nix
+      ../../mod/laptop.nix
+      ../../mod/util.nix
+      ../../mod/x.nix
+      ../../mod/virtualisation.nix
+      ../../mod/alias.nix
+      ../../mod/bluetooth.nix
+      ../../mod/berlin.nix
+      ../../secret/mod/openvpn.nix
     ];
 
+  boot.initrd.luks.devices = {
+    root = {
+      device = "/dev/nvme0n1p2";
+      preLVM = true;
+    };
+  };
 
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  networking.hostName = "alex-nixos"; # Define your hostname.
+  networking.hostName = "simple-nixos"; # Define your hostname.
   networking.networkmanager.enable = true;
 
   # Configure network proxy if necessary
@@ -44,7 +51,10 @@
  nixpkgs.config = {
     allowUnfree = true;
     packageOverrides = oldpkgs: {
-      xmonad-user = (oldpkgs.callPackage ../../Packages/xmonad.nix {username="alex";});
+      unstable = import <nixos-unstable> {
+        config = config.nixpkgs.config;
+      };
+      xmonad-user = (oldpkgs.callPackage ../../pkg/xmonad.nix {username="ilmu";});
     };
   };
 
@@ -56,8 +66,8 @@
     tmux tree htop imagemagick ripgrep
     fzf firefox which openssl gnupg libreoffice
     gimp-with-plugins zathura file jq scrot vlc
-    tinc acpi go openssh
-    pavucontrol steam qutebrowser
+    tinc acpi unstable.go unstable.openssh
+    pavucontrol steam
     haskellPackages.ghc
     haskellPackages.stack
     haskellPackages.cabal-install
@@ -87,6 +97,15 @@
   #   enable = true;
   #   handlers
 
+  environment.variables = {
+    GOPATH = "/home/ilmu/Work/Go";
+    SISU = "/home/ilmu/Work/Go/src/sisu.sh";
+    SISU_AUTH_SECRET_KEY = "123456";
+    BROKER_CLIENT_ID = "1234";
+    BROKER_CLIENT_SECRET = "1234";
+    DEFAULT_CLIENT_ID = "601673176557782";
+    DEFAULT_CLIENT_SECRET = "g63ocune04hnr6a5136y3vcwpsidijxo";
+  };
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -120,11 +139,16 @@
 
   environment.shellAliases = lib.mkForce {
     ls="ls -h --color=auto --group-directories-first";
-    dekb="setxkbmap de";
+    iskb="setxkbmap is";
     uskb="setxkbmap us";
     todo="cat ~/todo.txt";
-    toedit="nvim ~/todo.txt";
+    toedit="vi ~/todo.txt";
     ec="emacsclient -c --socket-name=memacs";
+    ecd="emacs --user=ilmu --daemon=memacs";
+    ecg="emacsclient -c --socket-name=gomacs";
+    ecgd="emacs --user=gomu --daemon=gomacs";
+    eca="emacsclient -c --socket-name=auxmacs";
+    ecad="emacs --user=auxmu --daemon=auxmacs";
   };
 
   # Enable CUPS to print documents
@@ -143,14 +167,26 @@
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.groups.rishi = {
     name = "rishi";
-    members = ["alex"];
+    members = ["ilmu"];
     gid = 1666;
   };
 
-  users.users.alex = {
+  users.users.ilmu = {
     isNormalUser = true;
     uid = 1000;
     extraGroups = [ "wheel" "docker" "vboxusers" "networkmanager" "rishi" ];
+  };
+
+  users.users.auxmu = {
+    isNormalUser = true;
+    uid = 1001;
+    extraGroups = [ "wheel" "docker" "networkmanager" ];
+  };
+
+  users.users.gomu = {
+    isNormalUser = true;
+    uid = 1002;
+    extraGroups = [ "wheel" "docker" "networkmanager" ];
   };
 
   # As of now this doesn't work but it needs to be done to own the user.
@@ -168,6 +204,6 @@
   # compatible, in order to avoid breaking some software such as database
   # servers. You should change this only after NixOS release notes say you
   # should.
-  system.stateVersion = "20.03"; # Did you read the comment?
+  system.stateVersion = "19.03"; # Did you read the comment?
 
 }

@@ -8,14 +8,14 @@
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
-      ../../Modules/neovim.nix
-      ../../Modules/laptop.nix
-      ../../Modules/util.nix
-      ../../Modules/x.nix
-      ../../Modules/virtualisation.nix
-      ../../Modules/alias.nix
-      ../../Modules/bluetooth.nix
-      ../../Modules/berlin.nix
+      ../../mod/neovim.nix
+      ../../mod/laptop.nix
+      ../../mod/util.nix
+      ../../mod/x.nix
+      ../../mod/virtualisation.nix
+      ../../mod/alias.nix
+      ../../mod/bluetooth.nix
+      ../../mod/berlin.nix
     ];
 
   # This config is for a usb stick to keep around.
@@ -55,7 +55,7 @@
  #     unstable = import <nixos-unstable> {
   #      config = config.nixpkgs.config;
    #   };
-      xmonad-user = (oldpkgs.callPackage ../../Packages/xmonad.nix {username="ilmu";});
+      xmonad-user = (oldpkgs.callPackage ../../pkg/xmonad.nix {username="ilmu";});
     };
   };
 

@@ -7,60 +7,24 @@
 {
   imports =
     [ # Include the results of the hardware scan.
- #     ./hardware-configuration.nix
-      ../../Modules/neovim.nix
-      ../../Modules/laptop.nix
-      ../../Modules/util.nix
-      ../../Modules/x.nix
-      ../../Modules/virtualisation.nix
-      ../../Modules/alias.nix
-      ../../Modules/bluetooth.nix
-      ../../Modules/berlin.nix
+      ./hardware-configuration.nix
+      ../../mod/neovim.nix
+      ../../mod/laptop.nix
+      ../../mod/util.nix
+      ../../mod/x.nix
+      ../../mod/virtualisation.nix
+      ../../mod/alias.nix
+      ../../mod/bluetooth.nix
+      ../../mod/berlin.nix
     ];
 
-#  boot.initrd.luks.devices = {
-#    root = {
-#      device = "/dev/sda6";
-#      preLVM = true;
-#    };
-#  };
-# 
-#  environment.etc = {
-#    signed-boot = {
-#      source= ../w_signed_boot/configuration.nix;
-#      mode = "0440";
-#    };
-#  };
-# 
-#  boot.loader.systemd-boot.enable = true;
-#  boot.loader.efi.canTouchEfiVariables = true;
-#  # boot.loader.efi.efiSysMountPoint = "/boot/efi";
 
+  # Use the systemd-boot EFI boot loader.
+  boot.loader.systemd-boot.enable = true;
+  boot.loader.efi.canTouchEfiVariables = true;
 
- # boot.loader.grub = {
- #   enable = true;
- #   version = 2;
- #   device = "nodev";
- #   efiSupport = true;
- #   enableCryptodisk = true;
- #   efiInstallAsRemovable = true;
-#    Broken currently in nixpkgs.
-#    trustedBoot = {
-#      enable = true;
-#      systemHasTPM = "YES_TPM_is_activated";
-#    };
- # };
-
-  networking.hostName = "narrative"; # Define your hostname.
+  networking.hostName = "alex-nixos"; # Define your hostname.
   networking.networkmanager.enable = true;
-
-  # The global useDHCP flag is deprecated, therefore explicitly set to false here.
-  # Per-interface useDHCP will be mandatory in the future, so this generated config
-  # replicates the default behaviour.
-  networking.useDHCP = false;
-  networking.interfaces.enp0s25.useDHCP = true;
-  networking.interfaces.wlp2s0.useDHCP = true;
-  networking.interfaces.wwp0s20u4i6.useDHCP = true;
 
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
@@ -78,28 +42,24 @@
   time.timeZone = "Europe/Berlin";
 
  nixpkgs.config = {
-  #  allowUnfree = true;
-    allowBroken = true;
+    allowUnfree = true;
     packageOverrides = oldpkgs: {
- #     unstable = import <nixos-unstable> {
-  #      config = config.nixpkgs.config;
-   #   };
-      xmonad-user = (oldpkgs.callPackage ../../Packages/xmonad.nix {username="ilmu";});
+      xmonad-user = (oldpkgs.callPackage ../../pkg/xmonad.nix {username="alex";});
     };
   };
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-    wget vim curl emacs git zlib tmux feh
-    xfontsel xlsfonts xscreensaver xclip
-    tree htop imagemagick ripgrep
-    which openssl gnupg libreoffice kitty
-    gimp-with-plugins zathura file scrot
-    tinc acpi openssh pavucontrol vlc
-    nitrokey-app firefox qutebrowser
-    nixos-generators
+    wget vim curl emacs git zlib tmux feh acl
+    xfontsel xlsfonts xscreensaver xclip kitty
+    tmux tree htop imagemagick ripgrep
+    fzf firefox which openssl gnupg libreoffice
+    gimp-with-plugins zathura file jq scrot vlc
+    tinc acpi go openssh
+    pavucontrol steam qutebrowser
     haskellPackages.ghc
+    haskellPackages.stack
     haskellPackages.cabal-install
   ];
 
@@ -127,8 +87,6 @@
   #   enable = true;
   #   handlers
 
-  # environment.variables = {
-  # };
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -162,8 +120,11 @@
 
   environment.shellAliases = lib.mkForce {
     ls="ls -h --color=auto --group-directories-first";
-    todo="touch ~/todo.txt && cat ~/todo.txt";
+    dekb="setxkbmap de";
+    uskb="setxkbmap us";
+    todo="cat ~/todo.txt";
     toedit="nvim ~/todo.txt";
+    ec="emacsclient -c --socket-name=memacs";
   };
 
   # Enable CUPS to print documents
@@ -174,16 +135,33 @@
   hardware.pulseaudio.enable = true;
   hardware.pulseaudio.package = pkgs.pulseaudioFull;
 
-  # TODO: Move to module along with nitrokey-app
-  hardware.nitrokey.enable = true;
-  hardware.nitrokey.group = "wheel";
+  # Needed for steam
+  hardware.opengl.driSupport32Bit = true;
+  hardware.opengl.extraPackages32 = with pkgs.pkgsi686Linux; [ libva ];
+  hardware.pulseaudio.support32Bit = true;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users.ilmu = {
+  users.groups.rishi = {
+    name = "rishi";
+    members = ["alex"];
+    gid = 1666;
+  };
+
+  users.users.alex = {
     isNormalUser = true;
-    password = "password";
     uid = 1000;
-    extraGroups = [ "wheel" "docker" "vboxusers" "networkmanager" ];
+    extraGroups = [ "wheel" "docker" "vboxusers" "networkmanager" "rishi" ];
+  };
+
+  # As of now this doesn't work but it needs to be done to own the user.
+  # environment.shellInit = ''
+  #   setfacl -m "g:1666:rwx" /home/auxmu
+  #   setfacl -m "g:1666:rwx" /home/gomu
+  # '';
+
+  # For machinery at work.
+  networking.hosts = {
+    "127.0.0.1" = [ "redis" ];
   };
 
   # This value determines the NixOS release with which your system is to be

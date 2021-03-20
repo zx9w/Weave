@@ -4,7 +4,7 @@
     nvim = super.neovim.override
        {
         configure = {
-          customRC = builtins.readFile ../Config/vim.config;
+          customRC = builtins.readFile ../cfg/vim.config;
           packages.nvim = with pkgs.vimPlugins; {
             start = [
               ale            # syntax highlighting

@@ -7,31 +7,60 @@
 {
   imports =
     [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-      ../../Modules/neovim.nix
-      ../../Modules/laptop.nix
-      ../../Modules/util.nix
-      ../../Modules/x.nix
-      ../../Modules/virtualisation.nix
-      ../../Modules/alias.nix
-      ../../Modules/bluetooth.nix
-      ../../Modules/berlin.nix
-      ../../secret/Modules/openvpn.nix
+ #     ./hardware-configuration.nix
+      ../../mod/neovim.nix
+      ../../mod/laptop.nix
+      ../../mod/util.nix
+      ../../mod/x.nix
+      ../../mod/virtualisation.nix
+      ../../mod/alias.nix
+      ../../mod/bluetooth.nix
+      ../../mod/berlin.nix
     ];
 
-  boot.initrd.luks.devices = {
-    root = {
-      device = "/dev/nvme0n1p2";
-      preLVM = true;
-    };
-  };
+#  boot.initrd.luks.devices = {
+#    root = {
+#      device = "/dev/sda6";
+#      preLVM = true;
+#    };
+#  };
+# 
+#  environment.etc = {
+#    signed-boot = {
+#      source= ../w_signed_boot/configuration.nix;
+#      mode = "0440";
+#    };
+#  };
+# 
+#  boot.loader.systemd-boot.enable = true;
+#  boot.loader.efi.canTouchEfiVariables = true;
+#  # boot.loader.efi.efiSysMountPoint = "/boot/efi";
 
-  # Use the systemd-boot EFI boot loader.
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
 
-  networking.hostName = "simple-nixos"; # Define your hostname.
+ # boot.loader.grub = {
+ #   enable = true;
+ #   version = 2;
+ #   device = "nodev";
+ #   efiSupport = true;
+ #   enableCryptodisk = true;
+ #   efiInstallAsRemovable = true;
+#    Broken currently in nixpkgs.
+#    trustedBoot = {
+#      enable = true;
+#      systemHasTPM = "YES_TPM_is_activated";
+#    };
+ # };
+
+  networking.hostName = "narrative"; # Define your hostname.
   networking.networkmanager.enable = true;
+
+  # The global useDHCP flag is deprecated, therefore explicitly set to false here.
+  # Per-interface useDHCP will be mandatory in the future, so this generated config
+  # replicates the default behaviour.
+  networking.useDHCP = false;
+  networking.interfaces.enp0s25.useDHCP = true;
+  networking.interfaces.wlp2s0.useDHCP = true;
+  networking.interfaces.wwp0s20u4i6.useDHCP = true;
 
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
@@ -49,27 +78,28 @@
   time.timeZone = "Europe/Berlin";
 
  nixpkgs.config = {
-    allowUnfree = true;
+  #  allowUnfree = true;
+    allowBroken = true;
     packageOverrides = oldpkgs: {
-      unstable = import <nixos-unstable> {
-        config = config.nixpkgs.config;
-      };
-      xmonad-user = (oldpkgs.callPackage ../../Packages/xmonad.nix {username="ilmu";});
+ #     unstable = import <nixos-unstable> {
+  #      config = config.nixpkgs.config;
+   #   };
+      xmonad-user = (oldpkgs.callPackage ../../pkg/xmonad.nix {username="ilmu";});
     };
   };
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-    wget vim curl emacs git zlib tmux feh acl
-    xfontsel xlsfonts xscreensaver xclip kitty
-    tmux tree htop imagemagick ripgrep
-    fzf firefox which openssl gnupg libreoffice
-    gimp-with-plugins zathura file jq scrot vlc
-    tinc acpi unstable.go unstable.openssh
-    pavucontrol steam
+    wget vim curl emacs git zlib tmux feh
+    xfontsel xlsfonts xscreensaver xclip
+    tree htop imagemagick ripgrep
+    which openssl gnupg libreoffice kitty
+    gimp-with-plugins zathura file scrot
+    tinc acpi openssh pavucontrol vlc
+    nitrokey-app firefox qutebrowser
+    nixos-generators
     haskellPackages.ghc
-    haskellPackages.stack
     haskellPackages.cabal-install
   ];
 
@@ -97,15 +127,8 @@
   #   enable = true;
   #   handlers
 
-  environment.variables = {
-    GOPATH = "/home/ilmu/Work/Go";
-    SISU = "/home/ilmu/Work/Go/src/sisu.sh";
-    SISU_AUTH_SECRET_KEY = "123456";
-    BROKER_CLIENT_ID = "1234";
-    BROKER_CLIENT_SECRET = "1234";
-    DEFAULT_CLIENT_ID = "601673176557782";
-    DEFAULT_CLIENT_SECRET = "g63ocune04hnr6a5136y3vcwpsidijxo";
-  };
+  # environment.variables = {
+  # };
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -139,16 +162,8 @@
 
   environment.shellAliases = lib.mkForce {
     ls="ls -h --color=auto --group-directories-first";
-    iskb="setxkbmap is";
-    uskb="setxkbmap us";
-    todo="cat ~/todo.txt";
-    toedit="vi ~/todo.txt";
-    ec="emacsclient -c --socket-name=memacs";
-    ecd="emacs --user=ilmu --daemon=memacs";
-    ecg="emacsclient -c --socket-name=gomacs";
-    ecgd="emacs --user=gomu --daemon=gomacs";
-    eca="emacsclient -c --socket-name=auxmacs";
-    ecad="emacs --user=auxmu --daemon=auxmacs";
+    todo="touch ~/todo.txt && cat ~/todo.txt";
+    toedit="nvim ~/todo.txt";
   };
 
   # Enable CUPS to print documents
@@ -159,51 +174,22 @@
   hardware.pulseaudio.enable = true;
   hardware.pulseaudio.package = pkgs.pulseaudioFull;
 
-  # Needed for steam
-  hardware.opengl.driSupport32Bit = true;
-  hardware.opengl.extraPackages32 = with pkgs.pkgsi686Linux; [ libva ];
-  hardware.pulseaudio.support32Bit = true;
+  # TODO: Move to module along with nitrokey-app
+  hardware.nitrokey.enable = true;
+  hardware.nitrokey.group = "wheel";
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.groups.rishi = {
-    name = "rishi";
-    members = ["ilmu"];
-    gid = 1666;
-  };
-
   users.users.ilmu = {
     isNormalUser = true;
+    password = "password";
     uid = 1000;
-    extraGroups = [ "wheel" "docker" "vboxusers" "networkmanager" "rishi" ];
-  };
-
-  users.users.auxmu = {
-    isNormalUser = true;
-    uid = 1001;
-    extraGroups = [ "wheel" "docker" "networkmanager" ];
-  };
-
-  users.users.gomu = {
-    isNormalUser = true;
-    uid = 1002;
-    extraGroups = [ "wheel" "docker" "networkmanager" ];
-  };
-
-  # As of now this doesn't work but it needs to be done to own the user.
-  # environment.shellInit = ''
-  #   setfacl -m "g:1666:rwx" /home/auxmu
-  #   setfacl -m "g:1666:rwx" /home/gomu
-  # '';
-
-  # For machinery at work.
-  networking.hosts = {
-    "127.0.0.1" = [ "redis" ];
+    extraGroups = [ "wheel" "docker" "vboxusers" "networkmanager" ];
   };
 
   # This value determines the NixOS release with which your system is to be
   # compatible, in order to avoid breaking some software such as database
   # servers. You should change this only after NixOS release notes say you
   # should.
-  system.stateVersion = "19.03"; # Did you read the comment?
+  system.stateVersion = "20.03"; # Did you read the comment?
 
 }

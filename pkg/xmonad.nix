@@ -4,7 +4,7 @@
       pkgs.haskellPackages.xmonad
       pkgs.haskellPackages.xmonad-extras
       pkgs.haskellPackages.xmonad-contrib
-      (pkgs.haskellPackages.callPackage ../Libraries/xmonad-stockholm.nix {})
+      (pkgs.haskellPackages.callPackage ../lib/xmonad-stockholm.nix {})
     ];
   } /* haskell */ ''
 {-# LANGUAGE LambdaCase #-}

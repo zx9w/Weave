@@ -8,14 +8,14 @@
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
-      ../../Modules/neovim.nix
-      ../../Modules/laptop.nix
-      ../../Modules/x.nix
-      ../../Modules/virtualisation.nix
-      ../../Modules/alias.nix
-      ../../Modules/bluetooth.nix
-      ../../Modules/berlin.nix
-      ../../secret/Modules/openvpn.nix
+      ../../mod/neovim.nix
+      ../../mod/laptop.nix
+      ../../mod/x.nix
+      ../../mod/virtualisation.nix
+      ../../mod/alias.nix
+      ../../mod/bluetooth.nix
+      ../../mod/berlin.nix
+      ../../secret/mod/openvpn.nix
     ];
 
   boot.initrd.luks.devices = [
@@ -50,7 +50,7 @@
  nixpkgs.config =
    let
      haskell-overrides = self: super: {
-       xmonad-stockholm = (self.callPackage ../../Libraries/xmonad-stockholm.nix);
+       xmonad-stockholm = (self.callPackage ../../lib/xmonad-stockholm.nix);
      };
    in
   {
@@ -58,7 +58,7 @@
       unstable = import <nixos-unstable> {
         config = config.nixpkgs.config;
       };
-      xmonad-user = (oldpkgs.callPackage ../../Packages/xmonad.nix {username="ilmu";});
+      xmonad-user = (oldpkgs.callPackage ../../pkg/xmonad.nix {username="ilmu";});
       haskellPackages = oldpkgs.haskellPackages.override {
         overrides = haskell-overrides;
       };
